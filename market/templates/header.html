@@ -1,23 +1,60 @@
 <!-- 공통 헤더 -->
+<!-- header -> nav 변경 -->
 
-<header>
-    <!--  로고  -->
-    <div>
+<nav class = 'navbar navbar-expand-md bg-body-tertiary'>
+    <div class = 'container-fluid'>
+        <!--  로고  -->
+        <a class = 'navbar-brand' href = 'main.html'><img src = '../img/person.png' alt = 'logo', style = 'height: 30px;'></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
 
+
+        <div class = 'collapse navbar-collapse' id = 'navbarNav'>
+            <!--  검색창  -->
+            <form class="d-flex align-items-center ms-3" role="search">
+                <span class="me-2 text-nowrap">상품 검색</span>
+                <input class="form-control form-control-sm" type="search" placeholder="검색어 입력">
+            </form>
+                <!--  로그인 / 회원가입 <-> 로그아웃  -->
+                <!--{% if g.user %}-->
+                <!--    로그아웃, 마이페이지    -->
+                <ul class = 'navbar-nav ms-auto'>
+                    <!--     로그아웃     -->
+                    <li class = 'nav-item'>
+                        <a class = 'nav-link active'>
+                            로그아웃
+                        </a>
+                    </li>
+
+                    <!--     마이페이지     -->
+                    <li class = 'nav-item'>
+                        <a class = 'nav-link active fw-bold' style = "background-color: #ccccff; color: white; border-radius: 5px; padding: 5px 15px;" href = '#'>
+                        마이페이지
+                        </a>
+                    </li>
+                </ul>
+
+<!--            {% else %}-->
+                <!--      로그인, 회원가입      -->
+                <ul>
+                    <!--     로그인     -->
+                    <li>
+                        <a class = 'nav-link active'>
+
+                        </a>
+                    </li>
+
+                    <!--     회원가입     -->
+                    <li>
+                        <a class = 'nav-link active'>
+
+                        </a>
+                    </li>
+                </ul>
+<!--            {% endif%}-->
+        </div>
     </div>
+</nav>
 
-    <!--  검색창  -->
-    <div>
-
-    </div>
-
-    <!--  로그인 / 회원가입 <-> 로그아웃  -->
-    <div>
-
-    </div>
-
-    <!--  마이페이지 - 회원만 권한 부여, 비회원은 회원전용입니다 안내 및 로그인 페이지 이동 -->
-    <div>
-
-    </div>
-</header>
+<!--확인용-->

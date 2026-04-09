@@ -12,6 +12,7 @@ class User(db.Model):
 class Admin(db.Model):
     id = db.Column(db.String(20), primary_key=True)      # admin id (PK)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete = 'CASCADE', onupdate = 'CASCADE'))
+    user = db.relationship('User')
 
 class Item(db.Model):
     id = db.Column(db.String(20), primary_key=True)
@@ -19,7 +20,9 @@ class Item(db.Model):
     item_description = db.Column(db.String(500), unique=True)
     item_price = db.Column(db.String(50), unique=True)
     status_id = db.Column(db.Integer, db.ForeignKey('item.id', ondelete = 'CASCADE', onupdate = 'CASCADE'))
+    status = db.relationship('Item_status')
     category_id = db.Column(db.Integer, db.ForeignKey('category.id', ondelete = 'CASCADE', onupdate = 'CASCADE'))
+    
     datetime = db.Column(db.DateTime)
 
 class Item_status(db.Model):
