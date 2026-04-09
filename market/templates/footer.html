@@ -1,22 +1,80 @@
 <!-- 공통 footer -->
-<footer>
-    <div>
-        <p>
 
-        </p>
-    </div>
+<style>
+    /* 푸터 전체 영역 */
+    .custom-footer {
+        background-color: #f8f9fa; /* 연한 회색 배경 */
+        padding: 40px 0 30px 0;
+        margin-top: 60px;
+        border-top: 1px solid #e9ecef;
+        color: #666;
+        font-size: 0.85rem;
+    }
 
-    <div>
-        <ul class ="d-flex flex-row mb-3">
-            <li>
+    /* 회사 정보 영역 (위쪽) */
+    .footer-top {
+        margin-bottom: 25px;
+    }
 
-            </li>
-            <li>
+    .footer-top p {
+        margin-bottom: 4px;
+        line-height: 1.6;
+    }
 
-            </li>
-            <li>
+    /* 하단 링크 리스트 영역 (아래쪽) */
+    .footer-bottom {
+        border-top: 1px solid #dee2e6; /* 위아래 구분선 */
+        padding-top: 20px;
+    }
 
-            </li>
-        </ul>
+    .footer-links {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap; /* 모바일에서 자동 줄바꿈 */
+        gap: 20px; /* 항목 사이 간격 */
+    }
+
+    .footer-links li a {
+        text-decoration: none;
+        color: #666;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+
+    .footer-links li a:hover {
+        color: #CCCCFF;
+    }
+
+    .copyright {
+        margin-top: 15px;
+        color: #999;
+        font-size: 0.8rem;
+    }
+</style>
+
+<footer class="custom-footer">
+    <div class="container">
+        <div class="footer-top">
+            <h6 class="fw-bold mb-3">REBORN</h6>
+            <p>대표: 임승찬</p>
+            <p>주소: 경기 수원시 팔달구 권광로 146 벽산그랜드코아 401호</p>
+            <p>전화: 010-1234-5678 | 고객문의: reborn@test.com</p>
+        </div>
+
+        <div class="footer-bottom">
+            <ul class="footer-links">
+                <li><a href="#">이용약관</a></li>
+                <li><a href="#" class="fw-bold text-dark">개인정보처리방침</a></li>
+                <li><a href="#">운영정책</a></li>
+                <li><a href="#">위치기반서비스 이용약관</a></li>
+                <li><a href="#">이용자보호 비전과 계획</a></li>
+                <li><a href="#">청소년보호정책</a></li>
+            </ul>
+
+            <div class="copyright">
+                &copy; 2026 Market REBORN. All rights reserved.
+            </div>
+        </div>
     </div>
 </footer>

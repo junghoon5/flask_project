@@ -25,10 +25,4 @@ def create_app():
     from .views import main_view
     app.register_blueprint(main_view.bp)
 
-
-    @app.route('/detail')
-    def detail():
-        return render_template('detail.html', product=None)
-
     return app
-
