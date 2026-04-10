@@ -22,7 +22,6 @@ class Item(db.Model):
     status_id = db.Column(db.Integer, db.ForeignKey('item.id', ondelete = 'CASCADE', onupdate = 'CASCADE'))
     status = db.relationship('Item_status')
     category_id = db.Column(db.Integer, db.ForeignKey('category.id', ondelete = 'CASCADE', onupdate = 'CASCADE'))
-    
     datetime = db.Column(db.DateTime)
 
 class Item_status(db.Model):
