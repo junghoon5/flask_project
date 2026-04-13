@@ -17,6 +17,7 @@ def signup():
         user = User.query.filter_by(login_id=form.user_id.data).first()
 
         if not user:
+
             new_user = User(
                 login_id=form.user_id.data,  # 유저가 입력한 ID ('test00' 등)
                 username=form.username.data,
