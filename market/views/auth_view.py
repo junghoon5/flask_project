@@ -16,12 +16,12 @@ def signup():
         user = User.query.filter_by(id=form.username.data).first()
         if not user:
             user = User(
-                id=form.user_id.data,  # 모델의 id 필드
-                username=form.username.data,  # 모델의 username 필드
-                password=generate_password_hash(form.password1.data),
-                email=form.email.data,
-                phone=form.phone.data  # 모델의 phone 필드
-                )
+                login_id = form.user_id.data,
+                username = form.username.data,
+                password = generate_password_hash(form.password1.data),
+                email = form.email.data,
+                phone = form.phone.data
+            )
             db.session.add(user)
             db.session.commit()
             # 가입 성공 후 메인 페이지로 이동
