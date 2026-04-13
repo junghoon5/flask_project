@@ -11,7 +11,6 @@ db = SQLAlchemy()     # ORM 도구
 migrate = Migrate()   # 테이블 구조 변경(DB migration) 관리
 
 
-
 # Seed 데이터 (초기 데이터)
 
 def init_item_status():
@@ -30,33 +29,24 @@ def init_item_status():
         ])
         db.session.commit()
 
-
-
-# Flask App Factory
-
 def create_app():
     app = Flask(__name__)
-
 
     # DB 설정
 
     BASE_DIR = os.path.dirname(__file__)
-
-    app.config['SQLALCHEMY_DATABASE_URI'] = \
-        'sqlite:///' + os.path.join(BASE_DIR, 'market.db')
-
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'market.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-
-    # 보안키
-
-    app.config['SECRET_KEY'] = 'dev'
 
 
     # Extension 초기화
 
     db.init_app(app)
     migrate.init_app(app, db)
+
+
+    SECRET_KEY = 'dev'
+    app.config['SECRET_KEY'] = SECRET_KEY
 
 
     # 모델 등록
@@ -88,5 +78,6 @@ def create_app():
     app.register_blueprint(favorite_view.bp)  # 찜
     app.register_blueprint(deal_view.bp)      # 거래
     app.register_blueprint(review_view.bp)    # 리뷰
+
 
     return app
