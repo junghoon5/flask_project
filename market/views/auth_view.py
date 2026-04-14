@@ -21,6 +21,7 @@ def signup():
         # 아이디 중복 체크
         user = User.query.filter_by(login_id=form.user_id.data).first()
         if not user:
+
             new_user = User(
                 login_id=form.user_id.data,
                 username=form.username.data,
@@ -51,7 +52,8 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user.id
-            return redirect(url_for('main_view.index'))
+
+            return redirect(url_for('main.index'))
         flash(error)
     return render_template('auth/login.html', form=form)
 
@@ -76,8 +78,9 @@ def login_required(view):
 # 로그아웃 - 세션 정보를 모두 삭제
 @bp.route('/logout/')
 def logout():
-    session.clear()
-    return redirect(url_for('main_view.index'))
+    session.clear() # 세션의 모든 정보(user_id 등) 삭제
+    return redirect(url_for('main.index')) # 로그아웃 후 메인 페이지로 이동
+
 
 # 아이디 찾기
 @bp.route('/find_account/', methods=['GET', 'POST'])

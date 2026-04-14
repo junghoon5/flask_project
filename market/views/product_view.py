@@ -1,5 +1,8 @@
-from flask import Blueprint, render_template
-from market.models import Item
+
+from datetime import datetime  # 날짜 기능을 쓰기 위해 추가
+from flask import Blueprint, render_template, request, url_for, redirect # request 추가
+from market import db  # db.session을 쓰기 위해 추가
+from market.models import Item, Comment  # Comment 모델 추가 (4개코드 오늘 수정함 4월14일)
 
 bp = Blueprint('items', __name__, url_prefix='/items')
 
@@ -7,14 +10,3 @@ bp = Blueprint('items', __name__, url_prefix='/items')
 @bp.route('/product-upload/')
 def product_upload():
     return render_template('items/write.html')
-
-# 상품 상세페이지
-@bp.route('/product-details/<int:item_id>/')
-def product_details(item_id):
-    product = Item.query.get_or_404(item_id)
-    return render_template('items/PDP.html', product=product)
-
-# 카테고리별 페이지
-@bp.route('/product-categories/<int:category_id>')
-def product_categories(category_id):
-    return render_template('items/CP.html', category_id=category_id)
