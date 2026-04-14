@@ -2,7 +2,11 @@
 
 {% extends 'base.html' %}
 {% block content %}
+
 <div class="container">   <!-- container css로 위치조정 -->
+    <div class="d-flex justify-content-end">
+        <a href="{{ url_for('main.index') }}" class="custom-btn mb-4">메인으로</a>
+    </div>
     <!-- 프로필 나중에 static 폴더 생기면 css에 옮기기 -->
     <div class="d-flex align-items-center mb-5">
         <div class="avatar-circle" style="background-color: #4A90E2; width: 100px; height: 100px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 2.5rem; font-weight: bold;">
@@ -29,12 +33,12 @@
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="row g-0">
                         <div class="col-4">
-                            <img src="/static/img/default_product.png" class="img-fluid rounded-start" alt="상품이미지" style="height: 100px; object-fit: cover;">
+                            <img src="/static/img/.png" class="img-fluid rounded-start" alt="상품이미지" style="height: 100px; object-fit: cover;">
                         </div>
                         <div class="col-8">
                             <div class="card-body py-2">
-                                <h6 class="card-title mb-1 text-truncate">{{ product.title }}</h6>
-                                <p class="card-text fw-bold text-primary">{{ product.price }}원</p>
+                                <h6 class="card-title mb-1 text-truncate">{{ product.item_title }}</h6>
+                                <p class="card-text fw-bold text-primary">{{ product.item_price }}원</p>
                             </div>
                         </div>
                     </div>
@@ -43,6 +47,7 @@
             {% endfor %}
         </div>
     </div>
+
     <!-- 찜한 물건 목록 -->
     <div class="mb-5">
         <h5 class="fw-bold mb-3">❤️ 찜한 물건 목록</h5>
@@ -56,8 +61,8 @@
                         </div>
                         <div class="col-8">
                             <div class="card-body py-2">
-                                <h6 class="card-title mb-1 text-truncate">{{ wish.product.title }}</h6>
-                                <p class="card-text fw-bold text-danger">{{ wish.product.price }}원</p>
+                                <h6 class="card-title mb-1 text-truncate">{{ wish.item.item_title }}</h6>
+                                <p class="card-text fw-bold text-danger">{{ wish.item.item_price }}원</p>
                             </div>
                         </div>
                     </div>
@@ -66,7 +71,7 @@
             {% endfor %}
         </div>
     </div>
-        <!-- 구매자 리뷰 -->
+    <!-- 구매자 리뷰 -->
     <div>
         <h5 class="fw-bold mb-3">💬 구매자 리뷰</h5>
         <div class="list-group list-group-flush border-top">
@@ -82,6 +87,5 @@
         </div>
         <button class="btn btn-light w-100 mt-3 py-2 text-muted">더보기</button>
     </div>
-
 </div>
 {% endblock %}

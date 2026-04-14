@@ -1,6 +1,8 @@
 from flask import Blueprint, request, redirect, url_for, flash, render_template, session, g
 from werkzeug.security import generate_password_hash, check_password_hash
 
+import functools
+
 from market import db
 from market.forms import UserCreateForm, UserLoginForm
 from market.models import User
@@ -50,7 +52,7 @@ def login():
             session.clear()
             session['user_id'] = user.id
 
-            return redirect(url_for('main_view.index'))
+            return redirect(url_for('main.index'))
 
         flash(error)
     return render_template('auth/login.html', form=form)
@@ -68,7 +70,7 @@ def load_logged_in_user():
 @bp.route('/logout/')
 def logout():
     session.clear() # 세션의 모든 정보(user_id 등) 삭제
-    return redirect(url_for('main_view.index')) # 로그아웃 후 메인 페이지로 이동
+    return redirect(url_for('main.index')) # 로그아웃 후 메인 페이지로 이동
 
 # 계정찾기 라우팅 함수
 @bp.route('/find_account/', methods=['GET', 'POST'])
@@ -90,3 +92,15 @@ def find_account():
 
     return render_template('auth/find_account.html')
 
+
+# 데코레이션 함수
+def login_required(view):
+    @functools.wraps(view)
+    def wrapped_view(*args, **kwargs):
+        if g.user is None:
+            _next = request.url if request.method == 'GET' else ''
+
+            return redirect(url_for('auth.login', next=_next))
+        return view(*args, **kwargs)
+
+    return wrapped_view
