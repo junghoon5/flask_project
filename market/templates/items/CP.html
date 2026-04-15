@@ -1,6 +1,78 @@
-<!-- 상품 카테고리별 페이지 -->
+<!-- 상품 카테고리별, 필터링(거래 가능만) 페이지 -->
 
 {% extends 'base.html' %}
 {% block content %}
 
+<style>
+    .category-link {
+        display: block;
+        padding: 8px 0;
+        color: #666;
+        text-decoration: none;
+    }
+
+    .category-link:hover { color: #CCCCFF; }
+
+    .custom-btn {
+        background-color: #CCCCFF;
+        color: white !important;
+        border-radius: 8px;
+        padding: 6px 18px;
+        transition: all 0.3s ease;
+        display: inline-block;
+        text-decoration:none;
+        border: none;
+        font-weight: bold;
+    }
+
+    .custom-btn:hover {
+        background-color: #B3B3FF;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(204, 204, 255, 0.4);
+    }
+
+    .main-container {
+        margin-top: 50px;
+        padding: 40px 0;
+    }
+</style>
+
+<main class="container main-container">
+    <div class="row">
+        <aside class="col-md-2">
+            <div style="margin-bottom: 20px;">
+                <h6 class="fw-bold mb-3">필터</h6>
+                <a href="{{ url_for('items.product_statuses', item_status_id=1) }}" class="category-link">
+                    거래 가능만 보기
+                </a>
+            </div>
+
+            <div>
+                <h6 class="fw-bold mb-3">카테고리</h6>
+                    {% for cat in all_categories %}
+                    <a href="{{ url_for('items.product_categories', category_id=cat.id) }}" class="category-link">
+                        {{ cat.category_name }}
+                    </a>
+                    {% endfor %}
+            </div>
+        </aside>
+
+        <div class="col-md-10">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <h3 class="fw-bold mb-4 d-flex justify-content-start">
+                {{ title }}
+                </h3>
+                <div class="d-flex justify-content-end">
+                    <!-- product_upload -> items/write.html -->
+                    <a href="{{ url_for('items.product_upload') }}" class="custom-btn">상품 등록하기</a>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end">
+                <a href="{{ url_for('main.index') }}" class="custom-btn mb-4">메인으로</a>
+            </div>
+            <div class="row">
+            </div>
+        </div>
+    </div>
+</main>
 {% endblock %}

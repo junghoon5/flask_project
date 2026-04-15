@@ -1,87 +1,383 @@
-<!-- 유저 마이페이지 -->
-
 {% extends 'base.html' %}
 {% block content %}
-<div class="container">   <!-- container css로 위치조정 -->
-    <!-- 프로필 나중에 static 폴더 생기면 css에 옮기기 -->
-    <div class="d-flex align-items-center mb-5">
-        <div class="avatar-circle" style="background-color: #4A90E2; width: 100px; height: 100px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 2.5rem; font-weight: bold;">
-            {{ user.username[0] | upper }}  <!-- 프로필사진에 유저아이디의 첫 글자만 보이게 -->
-        </div>
-        <!-- 유저이름과 상태메시지 -->
-        <div class="ms-4">
-            <div class="d-flex align-items-center">
-                <h3 class="mb-0 me-2">{{ user.username }}</h3>
-                <button class="btn btn-sm btn-outline-secondary">편집</button>
+
+<style>
+    body {
+        background-color: #eeeeff;
+    }
+
+    .mypage-section {
+
+        background-color: #ffffff;
+        border: 1px solid #e8e8ff;
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 14px rgba(171, 171, 250, 0.08);
+    }
+
+    .section-title {
+        font-weight: 700;
+        font-size: 20px;
+        margin-bottom: 16px;
+    }
+
+    .profile-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .profile-summary {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .summary-box {
+        min-width: 110px;
+        background-color: #f8f8ff;
+        border: 1px solid #ddddff;
+        border-radius: 14px;
+        padding: 14px 18px;
+        text-align: center;
+    }
+
+    .summary-label {
+        font-size: 13px;
+        color: #8a8aa8;
+        margin-bottom: 6px;
+    }
+
+    .summary-value {
+        font-size: 22px;
+        font-weight: 700;
+        color: #7d7df0;
+    }
+
+    .avatar-circle {
+        background: linear-gradient(135deg, #ababfa, #ccccff);
+        box-shadow: 0 8px 18px rgba(171, 171, 250, 0.25);
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
+
+    .profile-edit-btn {
+        background-color: white;
+        color: #ababfa;
+        border: 1px solid #ccccff;
+        border-radius: 8px;
+        padding: 4px 12px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .profile-edit-btn:hover {
+        background-color: #eeeeff;
+        border-color: #b3b3ff;
+        color: #8f8ff7;
+    }
+
+    .profile-status-box {
+        margin-top: 14px;
+        background-color: #f8f8ff;
+        border: 1px solid #ddddff;
+        border-radius: 12px;
+        padding: 10px 14px;
+        display: inline-block;
+        min-width: 220px;
+        max-width: 320px;
+    }
+
+    .status-label {
+        display: block;
+        font-size: 12px;
+        color: #8a8aa8;
+        margin-bottom: 4px;
+    }
+
+    .status-text {
+        font-size: 15px;
+        color: #555;
+        font-weight: 500;
+    }
+
+    .mypage-card {
+        border: none;
+        border-radius: 14px;
+        background-color: #ffffff;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .mypage-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 18px rgba(171, 171, 250, 0.12);
+    }
+
+    .favorite-remove-btn {
+        background-color: #eeeeff;
+        color: #7d7df0;
+        border: 1px solid #ccccff;
+        border-radius: 8px;
+        font-size: 13px;
+        padding: 4px 10px;
+        transition: all 0.2s ease;
+    }
+
+    .favorite-remove-btn:hover {
+        background-color: #ccccff;
+        color: white;
+    }
+
+    .empty-box {
+        background-color: #f8f8ff;
+        border: 1px dashed #ccccff;
+        border-radius: 14px;
+        text-align: center;
+        padding: 28px 16px;
+        color: #8a8aa8;
+        font-size: 15px;
+    }
+
+    .empty-product-card {
+        width: 240px;
+        border: 1px dashed #ccccff;
+        border-radius: 16px;
+        background-color: #f8f8ff;
+        padding: 14px;
+        text-align: center;
+    }
+
+    .empty-product-image {
+        width: 100%;
+        height: 180px;
+        background-color: #eeeeff;
+        border-radius: 12px;
+        margin-bottom: 14px;
+    }
+
+    .empty-product-text {
+        color: #8a8aa8;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .review-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .review-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        background-color: #f8f8ff;
+        border: 1px solid #e6e6ff;
+        border-radius: 14px;
+        padding: 14px 16px;
+        transition: all 0.2s ease;
+    }
+
+    .review-card:hover {
+        box-shadow: 0 6px 14px rgba(171, 171, 250, 0.12);
+        transform: translateY(-2px);
+    }
+
+    .review-text {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .review-content {
+        margin-bottom: 6px;
+        font-size: 15px;
+        color: #333;
+        word-break: break-word;
+    }
+
+    .review-item-name {
+        color: #8f8ff7;
+        font-size: 13px;
+    }
+
+    .review-thumb img {
+        width: 56px;
+        height: 56px;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 1px solid #ddddff;
+    }
+
+    .more-btn {
+        width: 100%;
+        margin-top: 16px;
+        background-color: #eeeeff;
+        color: #6f6ff2;
+        border: none;
+        border-radius: 12px;
+        padding: 12px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .more-btn:hover {
+        background-color: #ccccff;
+        color: white;
+    }
+</style>
+<div class="container mt-4">
+    <div class="mypage-section">
+        <h5 class="section-title">👤 나의 정보</h5>
+
+        <div class="profile-top">
+            <div class="profile-left d-flex align-items-center">
+                <div class="avatar-circle">
+                    {{ user.username[0] | upper }}
+                </div>
+
+                <div class="ms-4">
+                    <div class="d-flex align-items-center">
+                        <h3 class="mb-0 me-2">{{ user.username }}</h3>
+                        <button class="profile-edit-btn">편집</button>
+                    </div>
+                    <div class="text-muted small">UID: {{ user.id }}</div>
+                    <div class="profile-status-box mt-3">
+                        <span class="status-label">상태 메시지</span>
+                        <p class="status-text mb-0">마이페이지입니다.</p>
+                    </div>
+                </div>
             </div>
-            <div class="text-muted small">UID: {{ user.id }}</div>
-            <p class="mt-2 mb-0">{{ user.status_message or "상태 메시지가 없습니다." }}</p>
+
+            <div class="profile-summary">
+                <div class="summary-box">
+                    <div class="summary-label">판매 상품</div>
+                    <div class="summary-value">{{ products|length }}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="summary-label">찜한 상품</div>
+                    <div class="summary-value">{{ wishes|length }}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="summary-label">받은 리뷰</div>
+                    <div class="summary-value">{{ reviews|length }}</div>
+                </div>
+
+            </div>
         </div>
     </div>
-
     <hr class="my-4">
-    <!-- 판매 중인 상품 -->
-    <div class="mb-5">
-        <h5 class="fw-bold mb-3">📦 판매 중인 상품</h5>
+
+    <div class="mypage-section">
+        <h5 class="section-title">📦 판매 중인 상품</h5>
         <div class="row row-cols-1 row-cols-md-2 g-3">
-            {% for product in products %}  <!-- 상품 정보 db에서 나중에 컬럼 수정 -->
+            {% for product in products %}
             <div class="col">
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="row g-0">
                         <div class="col-4">
-                            <img src="/static/img/default_product.png" class="img-fluid rounded-start" alt="상품이미지" style="height: 100px; object-fit: cover;">
+                            <img src="/static/img/default_product.png" class="img-fluid rounded-start" alt="상품이미지"
+                                style="height: 100px; object-fit: cover;">
                         </div>
                         <div class="col-8">
                             <div class="card-body py-2">
-                                <h6 class="card-title mb-1 text-truncate">{{ product.title }}</h6>
-                                <p class="card-text fw-bold text-primary">{{ product.price }}원</p>
+                                <h6 class="card-title mb-1 text-truncate">
+                                    <a href="{{ url_for('product.detail', id=product.id) }}"
+                                        class="text-decoration-none text-dark">
+                                        {{ product.item_title }}
+                                    </a>
+                                </h6>
+                                <p class="card-text fw-bold text-primary">{{ product.item_price }}원</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            {% endfor %}
-        </div>
-    </div>
-    <!-- 찜한 물건 목록 -->
-    <div class="mb-5">
-        <h5 class="fw-bold mb-3">❤️ 찜한 물건 목록</h5>
-        <div class="row row-cols-1 row-cols-md-2 g-3">
-            {% for wish in wishes %}  <!-- 찜 기능 컬럼 생성 후 수정 -->
-            <div class="col">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="row g-0">
-                        <div class="col-4">
-                            <img src="/static/img/default_wish.png" class="img-fluid rounded-start" alt="찜이미지" style="height: 100px; object-fit: cover;">
-                        </div>
-                        <div class="col-8">
-                            <div class="card-body py-2">
-                                <h6 class="card-title mb-1 text-truncate">{{ wish.product.title }}</h6>
-                                <p class="card-text fw-bold text-danger">{{ wish.product.price }}원</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            {% else %}
+            <div class="empty-product-card">
+                <div class="empty-product-image"></div>
+                <div class="empty-product-text">등록한 상품이 없습니다.</div>
             </div>
             {% endfor %}
         </div>
-    </div>
-        <!-- 구매자 리뷰 -->
-    <div>
-        <h5 class="fw-bold mb-3">💬 구매자 리뷰</h5>
-        <div class="list-group list-group-flush border-top">
-            {% for review in reviews %}   <!-- 리뷰 컬럼 생성 후 수정 -->
-            <div class="list-group-item d-flex justify-content-between align-items-center py-3">
-                <div class="me-3">
-                    <p class="mb-1">{{ review.content }}</p>
-                    <small class="text-muted">거래 상품: {{ review.product.title }}</small>
-                </div>
-                <img src="/static/img/default_product.png" class="rounded shadow-sm" width="60" height="60" style="object-fit: cover;">
-            </div>
-            {% endfor %}
-        </div>
-        <button class="btn btn-light w-100 mt-3 py-2 text-muted">더보기</button>
     </div>
 
+
+    <!-- 찜한 물건 목록 -->
+    <div class="mypage-section">
+        <h5 class="section-title">❤️ 찜한 물건 목록</h5>
+        <div class="row row-cols-1 row-cols-md-2 g-3">
+            {% for wish in wishes %}
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="row g-0">
+                        <div class="col-4">
+                            <img src="/static/img/default_wish.png" class="img-fluid rounded-start" alt="찜이미지"
+                                style="height: 100px; object-fit: cover;">
+                        </div>
+                        <div class="col-8">
+                            <div class="card-body py-2">
+                                <h6 class="card-title mb-1 text-truncate">{{ wish.item.item_title }}</h6>
+                                <p class="card-text fw-bold text-danger">{{ wish.item.item_price }}원</p>
+
+                                <form method="post"
+                                    action="{{ url_for('product.remove_favorite', item_id=wish.item.id) }}">
+                                    <button class="btn btn-sm btn-outline-danger">찜 취소</button>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-product-card">
+                <div class="empty-product-image"></div>
+                <div class="empty-product-text">찜한 상품이 없습니다.</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- 구매자 리뷰 -->
+
+    <div class="mypage-section">
+        <h5 class="section-title">💬 구매자 리뷰</h5>
+
+        <div class="review-list">
+            {% for review in reviews %}
+            <div class="review-card">
+                <div class="review-text">
+                    <p class="review-content">{{ review.content }}</p>
+                    <small class="review-item-name">
+                        거래 상품:
+                        {% if review.deal and review.deal.item %}
+                        {{ review.deal.item.item_title }}
+                        {% else %}
+                        삭제된 상품
+                        {% endif %}
+                    </small>
+                </div>
+                <div class="review-thumb">
+                    <img src="/static/img/default_product.png" alt="상품 이미지">
+
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-box">아직 받은 리뷰가 없습니다.</div>
+            {% endfor %}
+        </div>
+        <button class="more-btn">더보기</button>
+    </div>
 </div>
 {% endblock %}

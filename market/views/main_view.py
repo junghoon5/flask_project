@@ -1,15 +1,9 @@
-from flask import Blueprint, redirect, url_for, render_template
+from flask import Blueprint, render_template
 
 bp = Blueprint('main', __name__, url_prefix='/')
 
 @bp.route('/')
 def index():
-    return render_template('main.html')
+    items = Item.query.order_by(Item.created_at.desc()).all()
+    return render_template('main.html', items=items)
 
-@bp.route('/detail')
-def detail():
-    return render_template('detail.html', product=None)
-
-@bp.route('/signup')
-def signup():
-    return render_template('auth/signup.html')
