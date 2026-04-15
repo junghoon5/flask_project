@@ -2,12 +2,7 @@
 {% block content %}
 
 <style>
-    body {
-        background-color: #eeeeff;
-    }
-
     .mypage-section {
-
         background-color: #ffffff;
         border: 1px solid #e8e8ff;
         border-radius: 18px;
@@ -292,12 +287,12 @@
                         <div class="col-8">
                             <div class="card-body py-2">
                                 <h6 class="card-title mb-1 text-truncate">
-                                    <a href="{{ url_for('product.detail', id=product.id) }}"
+                                    <a href="{{ url_for('items.product_details', item_id=product.id) }}"
                                         class="text-decoration-none text-dark">
                                         {{ product.item_title }}
                                     </a>
                                 </h6>
-                                <p class="card-text fw-bold text-primary">{{ product.item_price }}원</p>
+                                <p class="card-text fw-bold text-primary">{{ "{:,}원".format(product.item_price) }}</p>
                             </div>
                         </div>
                     </div>
@@ -328,7 +323,7 @@
                         <div class="col-8">
                             <div class="card-body py-2">
                                 <h6 class="card-title mb-1 text-truncate">{{ wish.item.item_title }}</h6>
-                                <p class="card-text fw-bold text-danger">{{ wish.item.item_price }}원</p>
+                                <p class="card-text fw-bold text-danger">{{ "{:,}원".format(wish.item.item_price) }}</p>
 
                                 <form method="post"
                                     action="{{ url_for('product.remove_favorite', item_id=wish.item.id) }}">
