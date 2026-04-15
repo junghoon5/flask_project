@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template
 from market.models import Item, Category
 
+
 bp = Blueprint('main', __name__, url_prefix='/')
 
 @bp.route('/')
