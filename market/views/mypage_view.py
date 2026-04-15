@@ -8,13 +8,16 @@ from market.models import Item, Favorite, Review
 
 bp = Blueprint('mypage', __name__, url_prefix='/mypage')
 
+bp = Blueprint('personal', __name__, url_prefix='/personal')
 
-@bp.route('/')
+
+# 마이페이지
+@bp.route('/mypage/')
 @login_required
-def mypage():
+def my_page():
     user = g.user
 
-    products = Item.query.filter_by(user_id=user.id, is_deleted=False)\
+    products = Item.query.filter_by(user_id=user.id)\
         .order_by(Item.created_at.desc()).all()
 
     wishes = Favorite.query.filter_by(user_id=user.id)\
@@ -84,3 +87,10 @@ def change_password():
 
 
     return render_template('personal/change_password.html', user=user)
+
+# 찜 목록
+@bp.route('/favorite/')
+@login_required
+def favorite():
+    return render_template('personal/favorite.html',
+                           wishes=g.user.favorites)

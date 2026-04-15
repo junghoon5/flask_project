@@ -552,6 +552,7 @@
             </div>
         </div>
     </div>
+    <hr class="my-4">
 
     <!-- 판매 중인 상품 -->
     <div class="mypage-section" id="productSection">
@@ -572,12 +573,12 @@
                         <div class="col-8">
                             <div class="card-body py-2">
                                 <h6 class="card-title mb-1 text-truncate">
-                                    <a href="{{ url_for('product.detail', id=product.id) }}"
+                                    <a href="{{ url_for('items.product_details', item_id=product.id) }}"
                                         class="text-decoration-none text-dark">
                                         {{ product.item_title }}
                                     </a>
                                 </h6>
-                                <p class="card-text fw-bold text-primary">{{ product.item_price }}원</p>
+                                <p class="card-text fw-bold text-primary">{{ "{:,}원".format(product.item_price) }}</p>
                             </div>
                         </div>
                     </div>
@@ -611,6 +612,9 @@
                         <!-- 찜한 상품 정보 -->
                         <div class="col-8">
                             <div class="card-body py-2">
+                                <h6 class="card-title mb-1 text-truncate">{{ wish.item.item_title }}</h6>
+                                <p class="card-text fw-bold text-danger">{{ "{:,}원".format(wish.item.item_price) }}</p>
+
                                 <h6 class="card-title mb-1 text-truncate">
                                     {{ wish.item.item_title }}
                                 </h6>
