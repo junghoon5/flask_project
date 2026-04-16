@@ -4,10 +4,9 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from market import db
 from market.views.auth_view import login_required
-from market.models import Item, Favorite, Review
+from market.models import Item, Favorite, Review, User
 
-bp = Blueprint('mypage', __name__, url_prefix='/mypage')
-
+# 경로 수정으로 인해 삭제 4월16일
 bp = Blueprint('personal', __name__, url_prefix='/personal')
 
 
@@ -34,7 +33,8 @@ def my_page():
         reviews=reviews
     )
 
-# 회원정보변경 4월15일 생성
+# 회원정보변경 4월16일 수정
+
 @bp.route('/edit', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
@@ -46,6 +46,26 @@ def edit_profile():
         user.username = request.form['username']
         user.email = request.form['email']
         user.phone = request.form['phone']
+
+        new_nickname = request.form.get('nickname', '').strip()
+
+        if not new_nickname:
+            flash('닉네임을 입력해주세요.')
+            return render_template('personal/edit_profile.html', user=user)
+
+        if len(new_nickname) > 10:
+            flash('닉네임은 10자 이하로 입력해주세요.')
+            return render_template('personal/edit_profile.html', user=user)
+
+        #중복체크 4월16일 생성
+        existing_user = User.query.filter_by(nickname=new_nickname).first()
+        if existing_user and existing_user.id != user.id:
+            flash('이미 사용 중인 닉네임입니다.')
+            return render_template('personal/edit_profile.html', user=user)
+
+        user.nickname = new_nickname
+        user.email = request.form.get('email', '').strip()
+        user.phone = request.form.get('phone', '').strip()
 
         if action == 'cancel':
             flash('수정이 취소되었습니다.')
@@ -93,8 +113,9 @@ def change_password():
         db.session.commit()
 
         flash('비밀번호가 변경되었습니다.')
-        return redirect(url_for('personal.edit_profile'))
 
+        #경로수정 4월16일
+        return redirect(url_for('personal.my_page'))
 
     return render_template('personal/change_password.html', user=user)
 
@@ -104,3 +125,37 @@ def change_password():
 def favorite():
     return render_template('personal/favorite.html',
                            wishes=g.user.favorites)
+
+# 판매자 공개정보 4월16일 생성
+@bp.route('/seller/<int:user_id>/')
+def seller_profile(user_id):
+    seller = User.query.get_or_404(user_id)
+
+    products = Item.query.filter_by(user_id=seller.id)\
+        .order_by(Item.created_at.desc()).all()
+
+    reviews = Review.query.filter_by(target_user_id=seller.id)\
+        .order_by(Review.created_at.desc()).all()
+
+    return render_template(
+        'personal/seller_profile.html',
+        seller=seller,
+        products=products,
+        reviews=reviews
+    )
+# 상태메시지 저장 4월16일 생성
+@bp.route('/status-message', methods=['POST'])
+@login_required
+def update_status_message():
+    user = g.user
+    new_status = request.form.get('status_message', '').strip()
+
+    if len(new_status) > 50:
+        flash('상태 메시지는 50자 이하로 입력해주세요.')
+        return redirect(url_for('personal.my_page'))
+
+    user.status_message = new_status
+    db.session.commit()
+    flash('상태 메시지가 저장되었습니다.')
+
+    return redirect(url_for('personal.my_page'))
