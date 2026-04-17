@@ -678,8 +678,6 @@
         }
     }
 
-    /* merge 후 중복삭제 4월17일 */
-
     /* 팝업 스타일 */
     .save-toast {
         position: fixed;
@@ -693,17 +691,13 @@
         font-weight: bold;
         box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3);
         z-index: 9999;
-        transition: opacity 0.5s ease;
+        transition: opacity 0.5s ease, transform 0.5s ease;
         opacity: 1;
+        pointer-events: none; {# 토스트로 클릭 안 되는 현상 방지 #}
     }
-
-
-    /* 4월15일 수정함 */
 </style>
 
 <div class="container mt-4">
-    <!--상태메시지 수정 flash, 4월 17일 flash 중복으로 삭제-->
-
     <!-- 나의 정보, 상품등록 버튼 추가 4월16일-->
     <div class="mypage-section">
         <div class="mypage-topbar">
@@ -952,7 +946,7 @@
         <!-- 리뷰 더보기 -->
         <!-- 리뷰가 5개 초과 했을 경우에만 더 보기 버튼이 나오게 4월15일 -->
         {% if reviews|length > 5 %}
-        <button class="more-btn" id="toggleReviewBtn" type="button">더 보기</button>
+            <button class="more-btn" id="toggleReviewBtn" type="button">더 보기</button>
         {% endif %}
     </div>
 </div>
@@ -1078,20 +1072,6 @@
         initSlider('productSliderTrack', 'productPrevBtn', 'productNextBtn');
         initSlider('wishSliderTrack', 'wishPrevBtn', 'wishNextBtn');
     });
-
-    // 토스트 팝업 JS
-    document.addEventListener('DOMContentLoaded', function () {
-        const toast = document.getElementById('saveToast');
-        if (toast) {
-            // 1.5초 동안 보여준 뒤에
-            setTimeout(function () {
-                toast.style.opacity = '0'; // 서서히 투명하게
-                // 애니메이션 끝나면 아예 제거
-                setTimeout(function () {
-                    toast.remove();
-                }, 500);
-            }, 1500);
-        }
-    });
 </script>
+
 {% endblock %}
