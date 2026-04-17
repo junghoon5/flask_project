@@ -223,7 +223,8 @@
     }
 </style>
 
-<div class="signup-container">
+{# JS로 에러 보내는 역할 추가  #}
+<div class="signup-container" id="signup-container" data-has-errors="{% if form.errors %}true{% else %}false{% endif %}">
     <div class="signup-card-custom">
         <!--왼쪽 브랜드 영역-->
         <div class="brand-section d-none d-md-flex">

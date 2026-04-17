@@ -109,12 +109,11 @@
     }
 </style>
 
-
-<div class="find-wrapper">
+{# find-container 추가 (기존 jinja템플릿 코드 삽입) -> 서버가 에러 판단 후 JS에 전달 #}
+<div class="find-wrapper" id="find-container" data-is-pw-error="{% if form.user_id.data or form.email_for_pw.data %}true{% else %}false{% endif %}">>
     <div class="find-card text-center">
         <!-- 페이지 제목-->
         <h2 class="fw-bold mb-4" style="color: #444; letter-spacing: -1px;">계정 찾기</h2>
-
 
         <!-- 탭 메뉴 (아이디 / 비밀번호)-->
 
@@ -214,7 +213,6 @@
     </div>
 </div>
 
-
 <!--JS: 아이디찾기/비번찾기 탭, 오토포커스-->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -261,5 +259,4 @@
         }
     });
 </script>
-
 {% endblock %}
