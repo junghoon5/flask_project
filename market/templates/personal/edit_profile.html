@@ -3,6 +3,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style/edit_profile.css') }}">
 {% endblock %}
 {% block content %}
+
 <div class="container">
     <div class="edit-card">
 
@@ -66,12 +67,13 @@
 
             <div class="form-group">
                 <label class="form-label">이메일</label>
-                <input type="email" name="email" class="form-control" value="{{ user.email or '' }}"
+                <input type="text" name="email" class="form-control" value="{{ user.email or '' }}"
                     placeholder="이메일 입력">
             </div>
 
             <div class="form-group">
                 <label class="form-label">전화번호</label>
+                <!--브라우저 자체 이메일 형식 검사 때문에 type="text"로 수정 4월20일-->
                 <input type="text" name="phone" class="form-control" value="{{ user.phone or '' }}"
                     placeholder="전화번호 입력">
             </div>

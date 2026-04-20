@@ -118,6 +118,7 @@ def product_upload():
     categories = Category.query.all()
     return render_template('items/write.html', categories = categories)
 
+
 # 상품 상세페이지 (4월17일 product_list 추가함)
 @bp.route('/product-details/<int:item_id>')
 def product_details(item_id):
@@ -197,7 +198,7 @@ def comment_create(item_id):
 
     return redirect(url_for('items.product_details', item_id=item_id))
 
-# 4월17일 수정함
+
 @bp.route('/comment/delete/<int:comment_id>')
 @login_required
 def comment_delete(comment_id):
@@ -214,8 +215,6 @@ def comment_delete(comment_id):
     # 이제 comment.item.id 대신 미리 뽑아둔 item_id를 사용합니다.
     return redirect(url_for('items.product_details', item_id=product_id))
 
-
-  # 4월17일 게시글 수정함
 @bp.route('/product/modify/<int:item_id>', methods=('GET', 'POST'))
 @login_required
 def product_modify(item_id):

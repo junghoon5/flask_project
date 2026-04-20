@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style/signup.css') }}">
 {% endblock %}
 {% block content %}
+
 {# JS로 에러 보내는 역할 추가  #}
 <div class="signup-container" id="signup-container" data-has-errors="{% if form.errors %}true{% else %}false{% endif %}">
     <div class="signup-card-custom">
@@ -170,7 +171,7 @@
             <div class="text-center mt-4" style="font-size: 0.85rem;">
                 <span class="text-muted">이미 계정이 있으신가요?</span>
                 <a href="{{ url_for('auth.login') }}"
-                    style="color: #ababfa; text-decoration: none; font-weight: bold;">로그인</a>
+                    style="color: #9C96F3; text-decoration: none; font-weight: bold;">로그인</a>
             </div>
         </div>
     </div>

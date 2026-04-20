@@ -3,6 +3,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style/seller_profile.css') }}">
 {% endblock %}
 {% block content %}
+
 <div class="container mt-4">
 
     <!-- 판매자 정보 -->
@@ -48,7 +49,7 @@
                 <!-- 판매 완료 -->
                 <div class="summary-box">
                     <div class="summary-label">판매 완료</div>
-                    <div class="summary-value">0</div>
+                    <div class="summary-value">{{ completed_products_count }}</div>
                 </div>
                 <!-- 받은 리뷰 -->
                 <div class="summary-box">

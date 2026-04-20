@@ -4,9 +4,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style/find_account.css') }}">
 {% endblock %}
 {% block content %}
-
 {# find-container 추가 (기존 jinja템플릿 코드 삽입) -> 서버가 에러 판단 후 JS에 전달 #}
-<div class="find-wrapper" id="find-container" data-is-pw-error="{% if form.user_id.data or form.email_for_pw.data %}true{% else %}false{% endif %}">>
+<div class="find-wrapper" id="find-container" data-is-pw-error="{% if form.user_id.data or form.email_for_pw.data %}true{% else %}false{% endif %}">
     <div class="find-card text-center">
         <!-- 페이지 제목-->
         <h2 class="fw-bold mb-4" style="color: #444; letter-spacing: -1px;">계정 찾기</h2>
@@ -102,7 +101,7 @@
         <!-- 로그인 페이지로 이동 -->
         <div class="mt-4">
             <a href="{{ url_for('auth.login') }}"
-                style="color: #ababfa; text-decoration: none; font-size: 0.9rem; font-weight: 500;">
+                style="color: #9C96F3; text-decoration: none; font-size: 0.9rem; font-weight: 500;">
                 로그인 화면으로 돌아가기
             </a>
         </div>

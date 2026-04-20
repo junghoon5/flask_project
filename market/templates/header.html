@@ -1,8 +1,10 @@
 <!-- 공통 header -->
 <!--header 대신 nav 태그 사용 및 nav 태그 기본 디자인 지정-->
+
 <nav class="navbar navbar-expand-md hfixed">
     <div class="container-fluid d-flex align-items-center">
-        <a class="navbar-brand" href="/">
+<!--('/')가 intro 페이지로 바뀌어 url_for 변경(4/20)-->
+        <a class="navbar-brand" href="{{ url_for('main.index') }}">
             <img src="{{ url_for('static', filename='img/reborn_logo.png') }}" alt="logo" style="height: 80px;">
         </a>
 
@@ -33,10 +35,11 @@
                 <!-- 로그아웃 상태일 때 로그인, 회원가입 출력  -->
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ url_for('auth.login') }}" style="font-size: 15px; color: #ababfa">로그인</a>
+                        <a class="nav-link active" href="{{ url_for('auth.login') }}" style="font-size: 15px; color: #9C96F3">로그인</a>
                     </li>
                     <li class="nav-item ms-md-2 mt-2 mt-md-0">
                         <a class="custom-btn" href="{{ url_for('auth.signup') }}">회원가입</a>
+                    </li>
 
                 {% endif %}
             </ul>
