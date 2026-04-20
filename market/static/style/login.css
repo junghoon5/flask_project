@@ -1,0 +1,187 @@
+/* 아이콘 위치를 잡기 위한 전용 스타일 */
+.pw-container {
+    position: relative;
+}
+
+.pw-container i {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #ccc;
+    z-index: 10;
+    font-size: 1.2rem;
+}
+
+/* 레이아웃: 화면 전체 중앙 정렬 */
+.login-container {
+    background-color: #f9f9ff;
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* 로그인 카드 스타일 */
+.login-card-custom {
+    display: flex;
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(204, 204, 255, 0.2);
+    overflow: hidden;
+}
+
+/* 부드럽게 위로 올라오며 나타나는 효과 */
+.run-fade-in {
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+        /* 20px 아래에서 시작 */
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        /* 제자리 위치 */
+    }
+}
+
+/* 왼쪽 포인트 영역 */
+.brand-section {
+    flex: 1;
+    background-color: #CCCCFF;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+/* 오른쪽 폼 영역 */
+.form-section {
+    flex: 1.2;
+    padding: 50px 40px;
+}
+
+/* 입력창 및 일반 로그인 버튼 */
+.custom-input {
+    border: 2px solid #eeeeff !important;
+    border-radius: 12px !important;
+    padding: 12px 15px;
+}
+
+/* 입력창 포커스 시 스타일 */
+.custom-input:focus {
+    border-color: #CCCCFF !important;
+    background-color: white;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(204, 204, 255, 0.25) !important;
+    transition: all 0.2s ease-in-out;
+}
+
+/* 일반 로그인 버튼 */
+.login-submit-btn {
+    background-color: #CCCCFF;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-weight: bold;
+    width: 100%;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.login-submit-btn:hover {
+    background-color: #B3B3FF;
+    transform: translateY(-2px);
+}
+
+/* 부트스트랩 기본 느낌표 아이콘 지움 */
+.form-control.is-invalid {
+    background-image: none !important;
+    padding-right: 2.5rem !important;
+    /* 원래 아이콘이 있을 공간 확보 */
+}
+
+/* 에러 발생 시 테두리 색상 빨간색으로 */
+.is-invalid {
+    border: 1.5px solid #dc3545 !important;
+}
+
+/* 하단 빨간색 메시지 스타일 */
+.invalid-feedback-custom {
+    color: #dc3545;
+    font-size: 0.82rem;
+    margin-top: 6px;
+    padding-left: 5px;
+    font-weight: 500;
+    display: block;
+}
+
+#togglePassword {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 5;
+}
+
+/* 카카오 로그인 버튼 */
+.kakao-login-btn {
+    background-color: #FEE500;
+    color: #3C1E1E;
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    width: 100%;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    transition: all 0.3s ease;
+}
+
+.kakao-login-btn:hover {
+    background-color: #F7E111;
+    transform: translateY(-2px);
+    color: #3C1E1E;
+}
+
+.kakao-icon {
+    width: 20px;
+    margin-right: 10px;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: #aaa;
+    font-size: 0.8rem;
+}
+
+/* 중간 "또는" 구분선 */
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #eee;
+}
+
+.divider span {
+    padding: 0 10px;
+}

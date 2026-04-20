@@ -1,0 +1,123 @@
+.custom-btn {
+    background-color: #CCCCFF;
+    color: white !important;
+    border-radius: 8px;
+    padding: 6px 18px;
+    transition: all 0.3s ease;
+    display: inline-block;
+    text-decoration: none;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.custom-btn:hover {
+    background-color: #B3B3FF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(204, 204, 255, 0.4);
+}
+
+/* 전체 폼 컨테이너 */
+.form-container {
+    max-width: 950px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border: 1px solid #eeeeee;
+    border-radius: 12px;
+}
+
+/* 가격 입력창 화살표 제거 */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* 레이아웃 분할 */
+.upload-main-layout {
+    display: flex;
+    gap: 40px;
+}
+
+.photo-section {
+    flex: 1.2;
+}
+
+.info-section {
+    flex: 1;
+    border-left: 1px solid #eee;
+    padding-left: 40px;
+}
+
+/* 업로드 영역 스타일 */
+.main-upload-area {
+    width: 100%;
+    aspect-ratio: 1/1;
+    border: 2px dashed #CCCCFF;
+    background-color: #f9f9ff;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: 0.3s;
+}
+
+.preview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.preview-item {
+    position: relative;
+    aspect-ratio: 1/1;
+    border: 1px dashed #ccc;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #fafafa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.custom-input {
+    background-color: #f0f0ff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 15px;
+    margin-bottom: 5px;
+}
+
+.custom-label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.btn-remove {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+}
+
+.empty-slot {
+    color: #ccc;
+    font-size: 20px;
+}

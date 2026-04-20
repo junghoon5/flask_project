@@ -102,18 +102,14 @@ def create_app():
         product_view,
         mypage_view,
  #       favorite_view,
-#        deal_view,
  #       review_view,
-
     )
 
     app.register_blueprint(main_view.bp)      # 메인 페이지
     app.register_blueprint(auth_view.bp)      # 회원가입 / 로그인
     app.register_blueprint(product_view.bp)   # 상품
-
     app.register_blueprint(mypage_view.bp)    # 마이 페이지
     # app.register_blueprint(favorite_view.bp)  # 찜
-    # app.register_blueprint(deal_view.bp)      # 거래
     # app.register_blueprint(review_view.bp)    # 리뷰
 
     return app

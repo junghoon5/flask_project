@@ -1,0 +1,246 @@
+body {
+    background-color: #ffffff;
+}
+
+.container {
+    max-width: 720px;
+    margin-top: 40px;
+    margin-bottom: 60px;
+}
+
+/* 카드 */
+.edit-card {
+    background: #ffffff;
+    border: 1px solid #f0f1f7;
+    border-radius: 22px;
+    padding: 32px;
+    box-shadow: 0 10px 30px rgba(119, 119, 170, 0.08);
+}
+
+/* 제목 */
+.section-title {
+    font-weight: 800;
+    font-size: 22px;
+    margin-bottom: 24px;
+    color: #2d2d44;
+}
+
+/* 프로필 */
+.profile-box {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+/* 프로필이미지 수정 4월17일 */
+.avatar-upload-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.profile-image-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+/* 프로필이미지 css추가 4월17일 */
+.avatar-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8c7bff, #c6beff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+    font-weight: 800;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+    margin-left: 24px;
+}
+
+/* 이미지 미리보기 4월17일*/
+.avatar-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+}
+
+/* 프로필 이미지 수정 버튼관련 4월17일 */
+.avatar-initial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.profile-image-btn {
+    background: #ffffff;
+    color: #6f61f2;
+    border: 1px solid #ddd6ff;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.profile-image-btn:hover {
+    background-color: #f4f2ff;
+}
+
+/* 입력폼 */
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #4b4568;
+    display: block;
+}
+
+.form-control {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid #ddd6ff;
+    padding: 10px 12px;
+    font-size: 14px;
+}
+
+/* 닉네임 css 4월17일 */
+.profile-meta {
+    display: flex;
+    align-items: center;
+    margin-left: 21px;
+}
+
+.profile-nickname {
+    color: #6C5CE7;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 1.2;
+    margin-top: 2px;
+}
+
+.profile-image-desc {
+    font-size: 12px;
+    color: #7b7891;
+    white-space: nowrap;
+}
+
+.profile-top-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.profile-bottom-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.form-control:focus {
+    border-color: #7c6ff6;
+    box-shadow: 0 0 0 3px rgba(124, 111, 246, 0.1);
+    outline: none;
+}
+
+/* 읽기전용 */
+.form-control[readonly] {
+    background-color: #f8f8ff;
+    color: #8a8aa3;
+}
+
+/* 비밀번호 변경 버튼 */
+.password-link-box {
+    margin-top: 10px;
+    padding: 16px 18px;
+    border: 1px solid #ece8ff;
+    border-radius: 14px;
+    background-color: #faf9ff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.password-link-text {
+    font-size: 14px;
+    color: #6d688a;
+}
+
+.btn-password-link {
+    background: transparent;
+    color: #6f61f2;
+    border: 1px solid #ddd6ff;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.btn-password-link:hover {
+    background-color: #f4f2ff;
+}
+
+/* 버튼 */
+.button-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 28px;
+}
+
+.btn-cancel {
+    background: #ffffff;
+    color: #6f61f2;
+    border: 1px solid #ddd6ff;
+    border-radius: 14px;
+    padding: 14px 20px;
+    font-weight: 700;
+    transition: 0.2s;
+}
+
+.btn-cancel:hover {
+    background-color: #f4f2ff;
+}
+
+.btn-save {
+    min-width: 140px;
+    background: linear-gradient(90deg, #7c6ff6, #695cef);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 14px 20px;
+    font-weight: 700;
+    transition: 0.2s;
+}
+
+.btn-save:hover {
+    box-shadow: 0 12px 24px rgba(124, 111, 246, 0.25);
+}
+
+/* 저장 메시지 */
+.alert-box {
+    margin-bottom: 20px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background-color: #f4f2ff;
+    border: 1px solid #ddd6ff;
+    color: #5f52d9;
+    font-size: 14px;
+    font-weight: 600;
+}
