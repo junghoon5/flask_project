@@ -1,5 +1,6 @@
 # import 추가 4월17일 수정
 import os
+import re
 import uuid
 
 from flask import Blueprint, render_template, g, request, flash, redirect, url_for, current_app
@@ -7,7 +8,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from market import db
 from market.views.auth_view import login_required
-from market.models import Item, Favorite, Review, User
+from market.models import Item, Favorite, Review, User, ItemStatus
 
 # 경로 수정으로 인해 삭제 4월16일
 bp = Blueprint('personal', __name__, url_prefix='/personal')
@@ -17,9 +18,12 @@ bp = Blueprint('personal', __name__, url_prefix='/personal')
 @login_required
 def my_page():
     user = g.user
-
-    products = Item.query.filter_by(user_id=user.id)\
-        .order_by(Item.created_at.desc()).all()
+    # 판매중인 상품수로 변경 4월20일
+    products = Item.query.join(ItemStatus).filter(
+        Item.user_id == user.id,
+        Item.is_deleted == False,
+        ItemStatus.item_status == '판매중'
+    ).order_by(Item.created_at.desc()).all()
 
     wishes = Favorite.query.filter_by(user_id=user.id)\
         .order_by(Favorite.created_at.desc()).all()
@@ -50,9 +54,10 @@ def edit_profile():
             return redirect(url_for('personal.my_page'))
 
         elif action == 'save':
+            # 검증방식 추가로 인해 수정 4월20일
             new_nickname = request.form.get('nickname', '').strip()
-            user.email = request.form.get('email', '').strip()
-            user.phone = request.form.get('phone', '').strip()
+            email = request.form.get('email', '').strip()
+            phone = request.form.get('phone', '').strip().replace(' ', '')
 
             if not new_nickname:
                 flash('닉네임을 입력해주세요.')
@@ -62,17 +67,31 @@ def edit_profile():
                 flash('닉네임은 10자 이하로 입력해주세요.')
                 return render_template('personal/edit_profile.html', user=user)
 
-            # 중복체크 4월16일 생성
+            # 중복체크 4월20일 수정
             existing_user = User.query.filter_by(nickname=new_nickname).first()
             if existing_user and existing_user.id != user.id:
                 flash('이미 사용 중인 닉네임입니다.')
                 return render_template('personal/edit_profile.html', user=user)
 
-            db.session.commit()
-            flash('회원정보가 저장되었습니다.')
-            return redirect(url_for('personal.my_page'))
-          
-            # 프로필 이미지 처리 4월17일
+
+            # 이메일 형식 검증하기 4월20일
+            email_pattern = r'^[\w\.-]+@[\w\.-]+\.[a-zA-Z]{3,}$'
+            if not re.match(email_pattern, email):
+                flash('올바른 이메일 형식을 입력해주세요.')
+                return render_template('personal/edit_profile.html', user=user)
+
+            # 전화번호 형식 검증하기 4월20일
+            phone_pattern = r'^01[0-9]-?\d{3,4}-?\d{4}$'
+            if not re.match(phone_pattern, phone):
+                flash('올바른 전화번호 형식을 입력해주세요.')
+                return render_template('personal/edit_profile.html', user=user)
+
+            # 변수저장
+            user.nickname = new_nickname
+            user.email = email
+            user.phone = phone
+
+            # 프로필 이미지 처리 merge후 위치변경 때문에 수정 4월20일
             file = request.files.get('profile_image')
 
             if file and file.filename != '':
@@ -109,6 +128,12 @@ def edit_profile():
 
                 # DB에 파일명 저장
                 user.profile_image = new_filename
+
+            db.session.commit()
+            flash('회원정보가 저장되었습니다.')
+            return redirect(url_for('personal.my_page'))
+          
+
 
     return render_template('personal/edit_profile.html', user=user)
 
@@ -165,8 +190,19 @@ def favorite():
 def seller_profile(user_id):
     seller = User.query.get_or_404(user_id)
 
-    products = Item.query.filter_by(user_id=seller.id)\
-        .order_by(Item.created_at.desc()).all()
+    # 판매 중인 상품만 조회 4월20일 수정
+    products = Item.query.join(ItemStatus).filter(
+        Item.user_id == seller.id,
+        Item.is_deleted == False,
+        ItemStatus.item_status == '판매중'
+    ).order_by(Item.created_at.desc()).all()
+
+    # 판매 완료 상품 조회 4월20일 수정
+    completed_products_count = Item.query.join(ItemStatus).filter(
+        Item.user_id == seller.id,
+        Item.is_deleted == False,
+        ItemStatus.item_status == '판매완료'
+    ).count()
 
     reviews = Review.query.filter_by(target_user_id=seller.id)\
         .order_by(Review.created_at.desc()).all()
@@ -175,7 +211,8 @@ def seller_profile(user_id):
         'personal/seller_profile.html',
         seller=seller,
         products=products,
-        reviews=reviews
+        reviews=reviews,
+        completed_products_count=completed_products_count
     )
 
 # 상태메시지 저장 4월16일 생성
@@ -194,3 +231,35 @@ def update_status_message():
     flash('상태 메시지가 저장되었습니다.')
 
     return redirect(url_for('personal.my_page'))
+
+# 거래내역 페이지 4월20일 생성
+@bp.route('/transactions/')
+@login_required
+def transaction_history():
+    user = g.user
+
+    selling_items = Item.query.join(ItemStatus).filter(
+        Item.user_id == user.id,
+        Item.is_deleted == False,
+        ItemStatus.item_status == '판매중'
+    ).order_by(Item.created_at.desc()).all()
+
+    reserved_items = Item.query.join(ItemStatus).filter(
+        Item.user_id == user.id,
+        Item.is_deleted == False,
+        ItemStatus.item_status == '예약중'
+    ).order_by(Item.created_at.desc()).all()
+
+    completed_items = Item.query.join(ItemStatus).filter(
+        Item.user_id == user.id,
+        Item.is_deleted == False,
+        ItemStatus.item_status == '판매완료'
+    ).order_by(Item.created_at.desc()).all()
+
+    return render_template(
+        'personal/transaction_history.html',
+        user=user,
+        selling_items=selling_items,
+        reserved_items=reserved_items,
+        completed_items=completed_items,
+    )

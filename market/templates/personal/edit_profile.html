@@ -221,10 +221,10 @@
     .btn-cancel:hover {
         background-color: #f4f2ff;
     }
-
+    /* 버튼 색 통일 4월20일 */
     .btn-save {
         min-width: 140px;
-        background: linear-gradient(90deg, #7c6ff6, #695cef);
+        background: #9C96F3;
         color: white;
         border: none;
         border-radius: 14px;
@@ -235,6 +235,7 @@
 
     .btn-save:hover {
         box-shadow: 0 12px 24px rgba(124, 111, 246, 0.25);
+        background: #8479ED;
     }
 
     /* 저장 메시지 */
@@ -313,12 +314,13 @@
 
             <div class="form-group">
                 <label class="form-label">이메일</label>
-                <input type="email" name="email" class="form-control" value="{{ user.email or '' }}"
+                <input type="text" name="email" class="form-control" value="{{ user.email or '' }}"
                     placeholder="이메일 입력">
             </div>
 
             <div class="form-group">
                 <label class="form-label">전화번호</label>
+                <!--브라우저 자체 이메일 형식 검사 때문에 type="text"로 수정 4월20일-->
                 <input type="text" name="phone" class="form-control" value="{{ user.phone or '' }}"
                     placeholder="전화번호 입력">
             </div>

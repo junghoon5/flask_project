@@ -64,9 +64,16 @@
         margin-bottom: 24px;
     }
 
-    /* 마이페이지 상품 등록 버튼 4월16일 추가*/
+    /* 마이페이지 버튼들 4월20일 */
+    .mypage-action-buttons {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    /* 마이페이지 상품 등록 버튼 4월20일 버튼색 통일*/
     .mypage-upload-btn {
-        background: linear-gradient(90deg, #c3bcff 0%, #aca3ff 100%);
+        background: #9C96F3;
         color: #ffffff;
         border: none;
         border-radius: 12px;
@@ -84,11 +91,31 @@
     .mypage-upload-btn:hover {
         filter: brightness(1.03);
         box-shadow: 0 12px 24px rgba(124, 111, 246, 0.24);
-        background: linear-gradient(90deg, #b8b0ff 0%, #9e94ff 100%);
+        background: #8479ED;
     }
 
     .mypage-upload-btn:active {
         transform: translateY(0);
+    }
+
+    /* 거래 내역 버튼 4월20일 */
+    .mypage-history-btn {
+        background: #ffffff;
+        color: #7c6ff6;
+        border: 1px solid #ddd6ff;
+        border-radius: 12px;
+        padding: 11px 20px;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .mypage-history-btn:hover {
+        background-color: #f4f2ff;
+        border-color: #cfc8ff;
+        color: #6f61f2;
     }
 
     /* 모바일 대응 */
@@ -114,7 +141,7 @@
     }
 
     /* nickname css 4월17일 */
-    .nickname-text{
+    .nickname-text {
         color: #6C5CE7;
         font-weight: 700;
     }
@@ -180,14 +207,15 @@
         font-size: 2.5rem;
         font-weight: bold;
     }
+
     /* 프로필이미지 4월17일 */
     .avatar-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-    display: block;
-}
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        display: block;
+    }
 
     /* 내 정보 수정 버튼  4월15일 명칭 변경으로 인해 수정*/
     .profile-edit-btn {
@@ -693,20 +721,30 @@
         z-index: 9999;
         transition: opacity 0.5s ease, transform 0.5s ease;
         opacity: 1;
-        pointer-events: none; {# 토스트로 클릭 안 되는 현상 방지 #}
+        pointer-events: none;
+
+            {
+            # 토스트로 클릭 안 되는 현상 방지 #
+        }
     }
 </style>
 
 <div class="container mt-4">
-    <!-- 나의 정보, 상품등록 버튼 추가 4월16일-->
+    <!-- 나의 정보, 거래 내역 버튼 추가 4월20일-->
     <div class="mypage-section">
         <div class="mypage-topbar">
             <h5 class="section-title mb-0">👤 나의 정보</h5>
+            <div class="mypage-action-buttons">
+                <button class="mypage-history-btn" type="button"
+                    onclick="location.href='{{ url_for('personal.transaction_history') }}'">
+                    거래 내역
+                </button>
 
-            <button class="mypage-upload-btn" type="button"
-                onclick="location.href='{{ url_for('items.product_upload') }}'">
-                상품 등록
-            </button>
+                <button class="mypage-upload-btn" type="button"
+                    onclick="location.href='{{ url_for('items.product_upload') }}'">
+                    상품 등록
+                </button>
+            </div>
         </div>
 
         <div class="profile-top">
@@ -837,16 +875,16 @@
             </div>
         </div>
         {% else %}
-        <!-- 상품이 없을 때 4월17일 수정-->
-        <a href="{{ url_for('items.product_upload') }}" class="empty-product-link">
-            <div class="empty-product-card">
-                <div class="empty-product-image"></div>
-                <div class="empty-product-text">
-                    현재 판매 중인 상품이 없습니다.<br>
-                    <strong>새 상품을 등록해보세요.</strong>
-                </div>
+        <!-- 상품이 없을 때 4월20일 상품등록으로 가는 기능 제거-->
+
+        <div class="empty-product-card">
+            <div class="empty-product-image"></div>
+            <div class="empty-product-text">
+                현재 판매 중인 상품이 없습니다.<br>
+
             </div>
-        </a>
+        </div>
+
         {% endif %}
     </div>
 
@@ -946,7 +984,7 @@
         <!-- 리뷰 더보기 -->
         <!-- 리뷰가 5개 초과 했을 경우에만 더 보기 버튼이 나오게 4월15일 -->
         {% if reviews|length > 5 %}
-            <button class="more-btn" id="toggleReviewBtn" type="button">더 보기</button>
+        <button class="more-btn" id="toggleReviewBtn" type="button">더 보기</button>
         {% endif %}
     </div>
 </div>
