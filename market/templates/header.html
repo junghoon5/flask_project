@@ -24,7 +24,7 @@
 
     /* 회원가입, 마이페이지 버튼 */
     .custom-btn {
-        background-color: #CCCCFF;
+        background-color: #9C96F3;
         color: white !important;
         border-radius: 8px;
         padding: 6px 18px;
@@ -45,8 +45,8 @@
     /* 상품 검색하기 버튼 */
     .search-toggle-btn {
         background-color: transparent;
-        color: #CCCCFF !important;
-        border: 2px solid #CCCCFF !important;
+        color: #9C96F3 !important;
+        border: 2px solid #9C96F3 !important;
         border-radius: 8px;
         padding: 6px 18px;
         font-weight: bold;
@@ -55,7 +55,7 @@
 
     /* 상품 검색하기 버튼 효과 */
     .search-toggle-btn:hover {
-        background-color: #CCCCFF;
+        background-color: #8479ED;
         color: white !important;
     }
 
@@ -89,7 +89,7 @@
         min-width: 300px;
         max-width: 600px;
         background-color: white;
-        border: 3px solid #CCCCFF;
+        border: 3px solid #9C96F3;
         border-radius: 25px;
         overflow: hidden;
         box-shadow: 0 5px 15px rgba(204, 204, 255, 0.1);
@@ -105,7 +105,7 @@
 
     /* 검색창 오른쪽 검색 버튼 */
     .search-submit-btn {
-        background-color: #CCCCFF;
+        background-color: #9C96F3;
         color: white;
         border: none;
         padding: 0 25px;
@@ -115,7 +115,7 @@
 
     /* 검색 버튼 효과 */
     .search-submit-btn:hover {
-        background-color: #B3B3FF;
+        background-color: #8479ED;
     }
 
     /* 반응형 화면에서 상품 검색하기, 햄버거 메뉴 겹치지 않게 */
@@ -148,7 +148,8 @@
 
 <nav class="navbar navbar-expand-md hfixed">
     <div class="container-fluid d-flex align-items-center">
-        <a class="navbar-brand" href="/">
+<!--('/')가 intro 페이지로 바뀌어 url_for 변경(4/20)-->
+        <a class="navbar-brand" href="{{ url_for('main.index') }}">
             <img src="{{ url_for('static', filename='img/reborn_logo.png') }}" alt="logo" style="height: 80px;">
         </a>
 
@@ -179,10 +180,11 @@
                 <!-- 로그아웃 상태일 때 로그인, 회원가입 출력  -->
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ url_for('auth.login') }}" style="font-size: 15px; color: #ababfa">로그인</a>
+                        <a class="nav-link active" href="{{ url_for('auth.login') }}" style="font-size: 15px; color: #9C96F3">로그인</a>
                     </li>
                     <li class="nav-item ms-md-2 mt-2 mt-md-0">
                         <a class="custom-btn" href="{{ url_for('auth.signup') }}">회원가입</a>
+                    </li>
 
                 {% endif %}
             </ul>

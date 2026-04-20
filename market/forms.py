@@ -53,10 +53,12 @@ class UserCreateForm(FlaskForm):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('이미 등록된 이메일입니다.')
 
-    # 전화번호 중복 체크 (DB에 unique=True가 있으므로 추가 권장)
+    # 전화번호 중복 체크 (4/20)
     def validate_phone(self, field):
-        if User.query.filter_by(phone=field.data).first():
-            raise ValidationError('이미 등록된 전화번호입니다.')
+        # 전화번호 입력했을 때만 DB에서 중복 확인
+        if field.data:
+            if User.query.filter_by(phone=field.data).first():
+                raise ValidationError('이미 등록된 전화번호입니다.')
 
 
 # 로그인 폼

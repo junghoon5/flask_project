@@ -1,12 +1,15 @@
 from flask import Flask
 from datetime import timedelta   # 로그인 세션 1시간 유지용(4/17)
 from flask_migrate import Migrate
+from flask_login import LoginManager #intro 페이지용(4/20)
 
 from flask_sqlalchemy import SQLAlchemy
 
 import os
 
 from sqlalchemy import MetaData
+
+login_manager = LoginManager()
 
 naming_convention = {
     'ix': 'ix_%(column_0_label)s',
@@ -20,6 +23,7 @@ naming_convention = {
 
 db = SQLAlchemy(metadata=MetaData(naming_convention=naming_convention))     # ORM 도구
 migrate = Migrate()   # 테이블 구조 변경(DB migration) 관리
+login_manager = LoginManager()  # Loginmanager객체 생성
 
 def create_app():
     app = Flask(__name__)
@@ -31,6 +35,16 @@ def create_app():
     # Extension 초기화
     db.init_app(app)
     migrate.init_app(app, db)
+
+    # LoginManager를 앱에 등록 (4/20)
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'  # 로그인 필요 시 이동할 페이지
+
+   # 유저 로더 정의 (4/20 추가)
+    from market.models import User
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
     # csrf 방지용 SECRET_KEY 지정
     SECRET_KEY = 'dev'

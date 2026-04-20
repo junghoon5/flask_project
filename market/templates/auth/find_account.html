@@ -60,13 +60,13 @@
     /* 선택된 활성화 탭 스타일 (연보라색 텍스트, 흰색 배경) */
     .nav-pills .nav-link.active {
         background-color: white !important;
-        color: #CCCCFF !important;
+        color: #9C96F3 !important;
         box-shadow: 0 4px 12px rgba(204, 204, 255, 0.2);
     }
 
     /* 입력창(Input) 기본 스타일 및 포커스 효과 */
     .custom-input {
-        border: 2px solid #f0f0ff !important;
+        border: 2px solid #E8E8FF !important;
         border-radius: 14px !important;
         padding: 13px 18px;
         background-color: #fcfcff;
@@ -75,7 +75,7 @@
 
     /* 확인 버튼 스타일 */
     .custom-input:focus {
-        border-color: #CCCCFF !important;
+        border-color: #D1D1FF !important;
         background-color: white;
         box-shadow: 0 5px 15px rgba(204, 204, 255, 0.1);
         outline: none;
@@ -84,7 +84,7 @@
     }
 
     .find-btn {
-        background-color: #CCCCFF;
+        background-color: #9C96F3;
         color: white;
         border: none;
         border-radius: 14px;
@@ -96,7 +96,7 @@
     }
 
     .find-btn:hover {
-        background-color: #B3B3FF;
+        background-color: #8479ED;
         transform: translateY(-2px);
     }
 
@@ -110,7 +110,7 @@
 </style>
 
 {# find-container 추가 (기존 jinja템플릿 코드 삽입) -> 서버가 에러 판단 후 JS에 전달 #}
-<div class="find-wrapper" id="find-container" data-is-pw-error="{% if form.user_id.data or form.email_for_pw.data %}true{% else %}false{% endif %}">>
+<div class="find-wrapper" id="find-container" data-is-pw-error="{% if form.user_id.data or form.email_for_pw.data %}true{% else %}false{% endif %}">
     <div class="find-card text-center">
         <!-- 페이지 제목-->
         <h2 class="fw-bold mb-4" style="color: #444; letter-spacing: -1px;">계정 찾기</h2>
@@ -206,7 +206,7 @@
         <!-- 로그인 페이지로 이동 -->
         <div class="mt-4">
             <a href="{{ url_for('auth.login') }}"
-                style="color: #ababfa; text-decoration: none; font-size: 0.9rem; font-weight: 500;">
+                style="color: #9C96F3; text-decoration: none; font-size: 0.9rem; font-weight: 500;">
                 로그인 화면으로 돌아가기
             </a>
         </div>
