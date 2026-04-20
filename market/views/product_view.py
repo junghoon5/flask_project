@@ -199,7 +199,7 @@ def comment_create(item_id):
 
     return redirect(url_for('items.product_details', item_id=item_id))
 
-# 4월17일 수정함
+
 @bp.route('/comment/delete/<int:comment_id>')
 @login_required
 def comment_delete(comment_id):
@@ -218,7 +218,7 @@ def comment_delete(comment_id):
 
 
 
-  # 4월17일 게시글 수정함
+
 @bp.route('/product/modify/<int:item_id>', methods=('GET', 'POST'))
 @login_required
 def product_modify(item_id):

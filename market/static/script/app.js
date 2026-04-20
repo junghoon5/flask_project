@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function(){
+document.addEventListener('DOMContentLoaded', function () {
 
     // toast 모든 페이지 기능 공유
     const toastList = ['saveToast', 'logoutToast'];
@@ -9,18 +9,18 @@ document.addEventListener('DOMContentLoaded', function(){
                 const bsToast = new bootstrap.Toast(toast, { autohide: false });
                 bsToast.show();
             }
-            setTimeout(function() {
+            setTimeout(function () {
                 toast.style.opacity = '0';
-                setTimeout(() => { if(toast.parentNode) toast.remove(); }, 500);
+                setTimeout(() => { if (toast.parentNode) toast.remove(); }, 500);
             }, 1500);
         }
     });
 
     // 상단 header 고정 ( header.html )
     const headerFixed = document.querySelector('.hfixed');
-    if(headerFixed) {
+    if (headerFixed) {
         const navHeight = headerFixed.offsetHeight;
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
             if (window.scrollY >= 40) {
                 headerFixed.classList.add('active');
                 document.body.style.paddingTop = navHeight + 'px';
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function(){
     const closeBtns = document.querySelectorAll('.modal_close_btn');
 
     openBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', function (e) {
             e.preventDefault();
             const targetId = 'modal_' + this.getAttribute('data-target');
             const targetModal = document.getElementById(targetId);
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function(){
     // 보안 강도 체크 ( 통합 경량화 )
     const strengthConfigs = [
         { input: 'signup-pw1', bar: 'strength-bar', text: 'strength-text' },
-        { input: 'reset-pw1', bar: 'strength-bar-reset', text: 'strength-text-reset'}
+        { input: 'reset-pw1', bar: 'strength-bar-reset', text: 'strength-text-reset' }
     ];
 
     strengthConfigs.forEach(conf => {
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     // JS: 화면 전환 ( singup.html )
-    window.toggleForm = function() {
+    window.toggleForm = function () {
         const selectArea = document.getElementById('select-area'), formArea = document.getElementById('email-form-area'), card = document.querySelector('.signup-card-custom');
         if (!selectArea || !formArea || !card) return;
 
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function(){
         selectArea.style.display = isOpening ? 'none' : 'block';
         formArea.style.display = isOpening ? 'block' : 'none';
         card.style.setProperty('max-width', isOpening ? '1000px' : '850px', 'important');
-        if (isOpening) { const inp = document.querySelector('input[name="user_id"]'); if(inp) inp.focus(); }
+        if (isOpening) { const inp = document.querySelector('input[name="user_id"]'); if (inp) inp.focus(); }
     };
 
     const signupContainer = document.getElementById('signup-container');
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function(){
     // 판매 중만 보기 필터링 ( main.html, CP.html 공용 )
     const sellOnlyCheck = document.getElementById('sellOnlyCheck');
     if (sellOnlyCheck) {
-        sellOnlyCheck.addEventListener('change', function() {
+        sellOnlyCheck.addEventListener('change', function () {
             const isChecked = this.checked;
             document.querySelectorAll('.product-item').forEach(item => {
                 item.style.display = (isChecked && item.getAttribute('data-status') !== '1') ? 'none' : 'block';
@@ -163,12 +163,12 @@ document.addEventListener('DOMContentLoaded', function(){
         });
     }
 
-    // 상품 이미지 페이지네이션 기능, 상품 삭제 시 alert ( PDP.html )
+    // 상품 이미지 페이지네이션 기능, 상품 삭제 시 alert ( PDP.html ) 4월20일 코드 수정
     const slides = document.querySelectorAll('.p-detail-img');
     const slideNum = document.getElementById('slideNum');
     let slideIdx = 0;
 
-    window.moveSlide = function(n) {
+    window.moveSlide = function (n) {
         if (slides.length <= 1) return;
         slides[slideIdx].style.display = 'none';
         slideIdx = (slideIdx + n + slides.length) % slides.length;
@@ -176,12 +176,29 @@ document.addEventListener('DOMContentLoaded', function(){
         if (slideNum) slideNum.innerText = slideIdx + 1;
     };
 
-    const delete_elements = document.getElementsByClassName("delete");
-    Array.from(delete_elements).forEach(element => {
-        element.addEventListener('click', function () {
-            if (confirm("정말로 삭제하시겠습니까? 다시 되돌릴 수 없습니다.")) location.href = this.dataset.uri;
+    // 게시글 삭제 컨펌 함수 (직접 호출 방식으로 변경하여 중복 방지)
+    window.confirmDelete = function (deleteUrl) {
+        if (confirm("정말로 삭제하시겠습니까? 다시 되돌릴 수 없습니다.")) {
+            location.href = deleteUrl;
+        }
+    };
+
+    // 댓글 더 보기 기능
+    window.showAllComments = function () {
+        // 1. 숨겨진 모든 댓글 요소를 가져옵니다.
+        const comments = document.querySelectorAll('.comment-item');
+
+        // 2. 모든 댓글을 보이게 바꿉니다.
+        comments.forEach(item => {
+            item.style.display = 'block';
         });
-    });
+
+        // 3. 더 보기 버튼은 더 이상 필요 없으므로 숨깁니다.
+        const btn = document.getElementById('load-more-btn');
+        if (btn) {
+            btn.style.display = 'none';
+        }
+    };
 
     // 상품 업로드 페이지 사진 업로드 구간 기능 ( write.html )
     const input = document.getElementById('images-input');
@@ -194,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function(){
             render();
         });
 
-        window.remove = function(i) {
+        window.remove = function (i) {
             selectedFiles.splice(i, 1);
             const dt = new DataTransfer(); selectedFiles.forEach(f => dt.items.add(f));
             input.files = dt.files; render();
@@ -227,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     // 마이페이지, 판매자페이지 ( mypage.html, seller_profile.html )
-    window.initSlider = function(trackId, prevBtnId, nextBtnId) {
+    window.initSlider = function (trackId, prevBtnId, nextBtnId) {
         const track = document.getElementById(trackId), prevBtn = document.getElementById(prevBtnId), nextBtn = document.getElementById(nextBtnId);
         if (!track || !prevBtn || !nextBtn) return;
         const slidesItems = track.querySelectorAll('.product-slide');
