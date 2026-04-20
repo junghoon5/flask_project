@@ -1,0 +1,104 @@
+/* 계정 찾기 전체 배경 레이아웃 */
+.find-wrapper {
+    background-color: #fcfcff;
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+/* 흰색 카드 박스 디자인 (그림자 포함) */
+.find-card {
+    width: 100%;
+    max-width: 480px;
+    background: white;
+    border-radius: 28px;
+    box-shadow: 0 25px 50px rgba(204, 204, 255, 0.2);
+    padding: 45px 35px;
+}
+
+/* 아이디 찾기, 비밀번호 찾기 전환용 탭 메뉴 배경 */
+.nav-pills {
+    background-color: #f3f3ff;
+    border-radius: 16px;
+    padding: 6px;
+    margin-bottom: 35px;
+}
+
+/* 폼 내용 애니메이션 효과 */
+.find-entrance {
+    animation: findFadeInUp 0.5s ease-out forwards;
+}
+
+@keyframes findFadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 개별 탭 버튼 스타일 */
+.nav-pills .nav-link {
+    border-radius: 12px;
+    color: #888 !important;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    padding: 12px;
+}
+
+/* 선택된 활성화 탭 스타일 (연보라색 텍스트, 흰색 배경) */
+.nav-pills .nav-link.active {
+    background-color: white !important;
+    color: #CCCCFF !important;
+    box-shadow: 0 4px 12px rgba(204, 204, 255, 0.2);
+}
+
+/* 입력창(Input) 기본 스타일 및 포커스 효과 */
+.custom-input {
+    border: 2px solid #f0f0ff !important;
+    border-radius: 14px !important;
+    padding: 13px 18px;
+    background-color: #fcfcff;
+    margin-bottom: 15px;
+}
+
+/* 확인 버튼 스타일 */
+.custom-input:focus {
+    border-color: #CCCCFF !important;
+    background-color: white;
+    box-shadow: 0 5px 15px rgba(204, 204, 255, 0.1);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(204, 204, 255, 0.25) !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.find-btn {
+    background-color: #CCCCFF;
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 15px;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.find-btn:hover {
+    background-color: #B3B3FF;
+    transform: translateY(-2px);
+}
+
+/* 입력 안내 문구 스타일 */
+.info-text {
+    color: #999;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}

@@ -4,7 +4,7 @@ from flask import Blueprint, request, redirect, url_for, flash, render_template,
 from werkzeug.security import generate_password_hash, check_password_hash
 import functools
 
-#import requests
+import requests
 
 from market import db
 from market.models import User
@@ -62,6 +62,15 @@ def check_email_duplicate():
     data = request.get_json()
     email = data.get('email')
     user = User.query.filter_by(email=email).first()
+    return jsonify({'exists': bool(user)})
+
+
+# 실시간 전화번호 중복 체크(4/20)
+@bp.route('/check_phone_duplicate/', methods=['POST'])
+def check_phone_duplicate():
+    data = request.get_json()
+    phone = data.get('phone')
+    user = User.query.filter_by(phone=phone).first()
     return jsonify({'exists': bool(user)})
 
 

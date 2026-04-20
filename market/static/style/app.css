@@ -1,0 +1,275 @@
+/* header style */
+
+nav {
+    min-height: 60px;
+    margin-top: 10px;
+    background-color: white;
+    border: none !important;
+    position: relative;
+}
+
+/* 헤더 고정용 css */
+.hfixed.active {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    margin-top: 0;
+}
+
+/* 회원가입, 마이페이지 버튼 */
+.custom-btn {
+    background-color: #CCCCFF;
+    color: white !important;
+    border-radius: 8px;
+    padding: 6px 18px;
+    transition: all 0.3s ease;
+    display: inline-block;
+    text-decoration: none;
+    border: none;
+    font-weight: bold;
+}
+
+/* 회원가입, 마이페이지 버튼 효과 */
+.custom-btn:hover {
+    background-color: #B3B3FF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(204, 204, 255, 0.4);
+}
+
+/* 상품 검색하기 버튼 */
+.search-toggle-btn {
+    background-color: transparent;
+    color: #CCCCFF !important;
+    border: 2px solid #CCCCFF !important;
+    border-radius: 8px;
+    padding: 6px 18px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+/* 상품 검색하기 버튼 효과 */
+.search-toggle-btn:hover {
+    background-color: #CCCCFF;
+    color: white !important;
+}
+
+/* 상품 검색하기 영역 그룹 */
+.center-search-area {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.search-wrapper {
+    background-color: white;
+    border: none !important;
+    width: 100%;
+}
+
+/* 검색창 쏠림 방지 및 중앙 정렬용 박스 */
+.search-inner-box {
+    display: flex;
+    justify-content: center;
+    padding: 15px 0 25px 0;
+    width: 100%;
+}
+
+/* 검색 요소 그룹 */
+.search-input-group {
+    display: flex;
+    width: 70%;
+    min-width: 300px;
+    max-width: 600px;
+    background-color: white;
+    border: 3px solid #CCCCFF;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(204, 204, 255, 0.1);
+}
+
+/* 검색창 */
+.custom-search-input {
+    flex: 1;
+    border: none !important;
+    padding: 12px 20px;
+    outline: none;
+}
+
+/* 검색창 오른쪽 검색 버튼 */
+.search-submit-btn {
+    background-color: #CCCCFF;
+    color: white;
+    border: none;
+    padding: 0 25px;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+/* 검색 버튼 효과 */
+.search-submit-btn:hover {
+    background-color: #B3B3FF;
+}
+
+/* 반응형 화면에서 상품 검색하기, 햄버거 메뉴 겹치지 않게 */
+@media (max-width: 768px) {
+    .center-search-area {
+        position: static;
+        transform: none;
+        margin: 10px 0;
+        text-align: center;
+    }
+}
+
+/* 로그아웃, 회원가입 토스트(4/17 게시글 수정 토스트랑 동일하게 변경) */
+.logout-toast {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #CCCCFF;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-weight: bold;
+    box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3);
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+    opacity: 1;
+}
+
+/* footer style */
+
+/* 푸터 전체 영역 */
+.custom-footer {
+    background-color: #f8f9fa; /* 연한 회색 배경 */
+    padding: 40px 0 30px 0;
+    margin-top: 60px;
+    border-top: 1px solid #e9ecef;
+    color: #666;
+    font-size: 14px;
+}
+
+/* 회사 정보 영역 (위쪽) */
+.footer-top {
+    margin-bottom: 25px;
+}
+
+.footer-top p {
+    margin-bottom: 4px;
+    line-height: 1.6;
+}
+
+/* 하단 링크 리스트 영역 (아래쪽) */
+.footer-bottom {
+    border-top: 1px solid #dee2e6; /* 위아래 구분선 */
+    padding-top: 20px;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap; /* 모바일에서 자동 줄바꿈 */
+    gap: 20px; /* 항목 사이 간격 */
+}
+
+.footer-links li a {
+    text-decoration: none;
+    color: #666;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.footer-links li a:hover {
+    color: #CCCCFF;
+}
+
+.copyright {
+    margin-top: 15px;
+    color: #999;
+    font-size: 0.8rem;
+}
+
+/* modal 기능 요소 style */
+.modal_style_pkg {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99999;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal_notice_main {
+    width: 690px;
+    height: 350px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 3px;
+    box-shadow: 5px 5px rgba(0,0,0,0.1);
+}
+
+.modal_notice_title {
+    width: 580px;
+    height: 100px;
+    margin: 0 auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid black;
+}
+
+.modal_notice_title p {
+    font-size: 24px;
+    font-weight: 400;
+}
+
+.modal_close_btn {
+    background-color: #CCCCFF;
+    color: white !important;
+    border-radius: 8px;
+    padding: 6px 18px;
+    transition: all 0.3s ease;
+    display: inline-block;
+    text-decoration: none;
+    border: none;
+    font-weight: bold;
+}
+
+.modal_close_btn:hover {
+    background-color: #B3B3FF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(204, 204, 255, 0.4);
+}
+
+.modal_notice_content {
+    width: 550px;
+    height: 250px;
+    margin: 0 auto;
+    margin-top: 25px;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.modal_notice_content p {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #6F6F6F;
+}
+
+.modal_notice_content li {
+    font-size: 14px;
+    color: #494949;
+    margin-bottom: 5px;
+    list-style: none;
+}

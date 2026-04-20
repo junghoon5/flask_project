@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/favorite.css') }}">
+{% endblock %}
 {% block content %}
 <div class="container">
     <h3>❤️ 나의 찜 목록</h3>

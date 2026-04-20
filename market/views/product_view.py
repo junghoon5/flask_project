@@ -105,7 +105,7 @@ def product_upload():
                         file.save(os.path.join(upload_path, filename))
 
                         # DB에 이미지 경로 기록 (ItemImage 모델 활용 4월17일 수정함)
-                        web_path = f'uploads/user_{g.user.id}/item_{new_item.id}/{filename}'
+                        web_path = f'/static/uploads/user_{g.user.id}/item_{new_item.id}/{filename}'
                         new_img = ItemImage(item_id=new_item.id, image_url=web_path)
                         db.session.add(new_img)
 
@@ -118,6 +118,7 @@ def product_upload():
     categories = Category.query.all()
     return render_template('items/write.html', categories = categories)
 
+
 # 상품 상세페이지 (4월17일 product_list 추가함)
 @bp.route('/product-details/<int:item_id>')
 def product_details(item_id):
@@ -129,8 +130,9 @@ def product_details(item_id):
         Item.user_id == product.user_id,
         Item.id != item_id,
         Item.is_deleted == False  # 삭제되지 않은 상품만
-    ).limit(6).all()
-    return render_template('items/PDP.html', product = product, cat = cat, status_list=status_list,product_list=product_list)
+    ).order_by(Item.created_at.desc()).limit(6).all()
+
+    return render_template('items/PDP.html', product = product, cat = cat, status_list=status_list, product_list=product_list)
 
 # PDP.html 상품 상태 게시글 업로드 유저만 수정 가능하고 이외의 유저는 수정 불가능 함수
 @bp.route('/modify-status/<int:item_id>', methods=['POST'])
@@ -194,11 +196,9 @@ def comment_create(item_id):
         db.session.add(comment)
         db.session.commit()
 
-        print(f"--- 댓글 저장 성공: {content[:10]}... ---")
-
     return redirect(url_for('items.product_details', item_id=item_id))
 
-# 4월17일 수정함
+
 @bp.route('/comment/delete/<int:comment_id>')
 @login_required
 def comment_delete(comment_id):
@@ -215,9 +215,6 @@ def comment_delete(comment_id):
     # 이제 comment.item.id 대신 미리 뽑아둔 item_id를 사용합니다.
     return redirect(url_for('items.product_details', item_id=product_id))
 
-
-
-  # 4월17일 게시글 수정함
 @bp.route('/product/modify/<int:item_id>', methods=('GET', 'POST'))
 @login_required
 def product_modify(item_id):
@@ -266,5 +263,5 @@ def product_delete(item_id):
 @bp.route('/user/items/<int:user_id>/')
 def user_items(user_id):
     item_list = Item.query.filter_by(user_id=user_id).order_by(Item.created_at.desc()).all()
-    return render_template('main.html', item_list=item_list)
+    return redirect(url_for('personal.seller_profile', user_id=user_id))
 
