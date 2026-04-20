@@ -118,6 +118,7 @@ def product_upload():
     categories = Category.query.all()
     return render_template('items/write.html', categories = categories)
 
+
 # 상품 상세페이지 (4월17일 product_list 추가함)
 @bp.route('/product-details/<int:item_id>')
 def product_details(item_id):

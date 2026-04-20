@@ -189,7 +189,7 @@
                     <div
                         style="width: 100%; margin-bottom: 10px; border-radius: 8px; overflow: hidden; background-color: #eee; border: 1px solid #f1f1f1;">
                         {% if product.images %}
-                        <img src="{{ url_for('static', filename=product.images[0].image_url) }}"
+                        <img src="{{ url_for('static', filename='uploads/' + (product.image_file if product.image_file else '')) }}"
                             style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block;">
                         {% else %}
                         <img src="{{ url_for('static', filename='img/default.png') }}"
