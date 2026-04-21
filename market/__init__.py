@@ -4,10 +4,9 @@ from flask_migrate import Migrate
 from flask_login import LoginManager #intro 페이지용(4/20)
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import MetaData
 
 import os
-
-from sqlalchemy import MetaData
 
 login_manager = LoginManager()
 
@@ -27,6 +26,9 @@ login_manager = LoginManager()  # Loginmanager객체 생성
 
 def create_app():
     app = Flask(__name__)
+
+    from .filter import format_datetime
+    app.jinja_env.filters['format_datetime'] = format_datetime
 
     BASE_DIR = os.path.dirname(__file__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'market.db')
@@ -116,7 +118,7 @@ def create_app():
         product_view,
         mypage_view,
  #       favorite_view,
- #       review_view,
+        review_view,
     )
 
     app.register_blueprint(main_view.bp)      # 메인 페이지
@@ -124,6 +126,6 @@ def create_app():
     app.register_blueprint(product_view.bp)   # 상품
     app.register_blueprint(mypage_view.bp)    # 마이 페이지
     # app.register_blueprint(favorite_view.bp)  # 찜
-    # app.register_blueprint(review_view.bp)    # 리뷰
+    app.register_blueprint(review_view.bp)    # 리뷰 4월21일
 
     return app

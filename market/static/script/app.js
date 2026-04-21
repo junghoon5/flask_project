@@ -1,27 +1,32 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // toast 모든 페이지 기능 공유
-    const toastList = ['saveToast', 'logoutToast'];
-    toastList.forEach(id => {
-        const toast = document.getElementById(id);
-        if (toast) {
-            if (toast.classList.contains('toast') && typeof bootstrap !== 'undefined') {
-                const bsToast = new bootstrap.Toast(toast, { autohide: false });
-                bsToast.show();
-            }
-            setTimeout(function () {
-                toast.style.opacity = '0';
-                setTimeout(() => { if (toast.parentNode) toast.remove(); }, 500);
-            }, 1500);
-        }
-    });
+    const flaskMsg = document.getElementById("flask-message");
+    if (flaskMsg && flaskMsg.value) {
+        showToast(flaskMsg.value);
+    }
+
+    // const toastList = ['saveToast', 'logoutToast', 'statusToast'];
+    // toastList.forEach(id => {
+    //     const toast = document.getElementById(id);
+    //     if (toast) {
+    //         if (toast.classList.contains('toast') && typeof bootstrap !== 'undefined') {
+    //             const bsToast = new bootstrap.Toast(toast, { autohide: false });
+    //             bsToast.show();
+    //         }
+    //         setTimeout(function () {
+    //             toast.style.opacity = '0';
+    //             setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
+    //         }, 1500);
+    //     }
+    // });
 
     // 상단 header 고정 ( header.html )
     const headerFixed = document.querySelector('.hfixed');
     if (headerFixed) {
         const navHeight = headerFixed.offsetHeight;
         window.addEventListener('scroll', function () {
-            if (window.scrollY >= 40) {
+            if (window.scrollY >= 30) {
                 headerFixed.classList.add('active');
                 document.body.style.paddingTop = navHeight + 'px';
             } else {
@@ -141,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // JS: 화면 전환 / 회원가입 중복 체크 ( 아이디, 닉네임, 이메일 ) / 이메일 도메인 추천 (( singup.html )
     // [화면 전환(이메일로 시작하기 - 이메일 회원가입)]
-    window.toggleForm = function() {
+    window.toggleForm = function () {
         const selectArea = document.getElementById('select-area');
         const formArea = document.getElementById('email-form-area');
         const title = document.getElementById('signup-title');
@@ -154,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
             formArea.style.display = 'block';
             card.style.setProperty('max-width', '1050px', 'important');
             const inp = document.querySelector('input[name="user_id"]');
-            if(inp) inp.focus();
+            if (inp) inp.focus();
         }
 
         // 폼이 열려있다가 닫힐 때 (선택 화면으로 돌아갈 때)
@@ -178,8 +183,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // 사용자가 다시 타이핑하면
         inputElement.addEventListener('input', function () {
             // 1. form.py 에러 메시지 제거
-            const parent = inputElement.parentElement;
+            const parent = inputElement.closest('.mb-3') || inputElement.closest('.mb-4');
+        if (parent) {
             parent.querySelectorAll('.invalid-feedback-custom').forEach(err => err.remove());
+        }
 
             // 2. 입력창 빨간 테두리 제거
             inputElement.classList.remove('is-invalid');
@@ -199,11 +206,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         // 입력 완료 -> 포커스 나갈 때 중복 체크 실행
-        inputElement.addEventListener('blur', function() {
+        inputElement.addEventListener('blur', function () {
             const value = inputElement.value.trim();
             if (value === "") return;
 
-        // 아이디, 닉네임 글자 수 검증(
+            // 아이디, 닉네임 글자 수 검증(
             let minLen = 0;
             let maxLen = 0;
             let label = "";
@@ -239,21 +246,25 @@ document.addEventListener('DOMContentLoaded', function () {
                     msgElement.innerText = "이미 사용 중입니다.";
                     msgElement.style.color = "#dc3545";
                     inputElement.classList.add('is-invalid');
-                // 사용 가능한 경우
+                    // 사용 가능한 경우
                 } else {
                     msgElement.innerText = "사용 가능합니다!";
-                    msgElement.style.color = "#CCCCFF";
+                    msgElement.style.color = "#9C96F3";
                     inputElement.classList.remove('is-invalid');
                 }
             });
         });
     }
 
-    // 아이디, 닉네임, 이메일 각각 실행
-    checkDuplicate('user_id', 'id-check-msg', "{{ url_for('auth.check_id_duplicate') }}", 'user_id');
-    checkDuplicate('nickname', 'nickname-check-msg', "{{ url_for('auth.check_nickname_duplicate') }}", 'nickname');
-    checkDuplicate('email', 'email-check-msg', "{{ url_for('auth.check_email_duplicate') }}", 'email');
-    checkDuplicate('phone', 'phone-check-msg', "{{ url_for('auth.check_phone_duplicate') }}", 'phone');
+    // 아이디, 닉네임, 이메일 각각 실행(4/21 추가)
+checkDuplicate('user_id', 'id-check-msg', "/auth/check_id_duplicate/", 'user_id');
+checkDuplicate('nickname', 'nickname-check-msg', "/auth/check_nickname_duplicate/", 'nickname');
+checkDuplicate('email', 'email-check-msg', "/auth/check_email_duplicate/", 'email');
+checkDuplicate('phone', 'phone-check-msg', "/auth/check_phone_duplicate/", 'phone');
+checkDuplicate('username', null, null, 'username');
+checkDuplicate('signup-pw1', null, null, 'password1');
+checkDuplicate('signup-pw2', null, null, 'password2');
+checkDuplicate('login-password', null, null, 'password');
 
     // [이메일 도메인 자동 추천 JS (4/17)]
     const emailInput = document.getElementById('email');
@@ -261,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const domains = ['naver.com', 'gmail.com', 'kakao.com', 'daum.net', 'hanmail.net', 'outlook.com'];
 
     if (emailInput && emailDataList) {
-        emailInput.addEventListener('input', function() {
+        emailInput.addEventListener('input', function () {
             const value = this.value;
 
             // '@'가 포함되었을 때 추천 도메인 보이게
@@ -303,7 +314,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (slideNum) slideNum.innerText = slideIdx + 1;
     };
 
-    window.handleInquiryClick = function(){
+    window.handleInquiryClick = function () {
         const form = document.getElementById('comment-form');
         const contentInput = document.getElementById('content');
 
@@ -345,14 +356,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (input && container) {
         input.addEventListener('change', e => {
+            const newFiles = Array.from(e.target.files);
+
+            if (selectedFiles.length + newFiles.length > 10) {
+                showToast("사진은 최대 10장만 업로드 가능합니다.");
+            }
+
             selectedFiles = [...selectedFiles, ...Array.from(e.target.files)].slice(0, 10);
+
+            const dt = new DataTransfer();
+            selectedFiles.forEach(f => dt.items.add(f));
+            input.files = dt.files;
+
             render();
         });
 
         window.remove = function (i) {
             selectedFiles.splice(i, 1);
-            const dt = new DataTransfer(); selectedFiles.forEach(f => dt.items.add(f));
+            const dt = new DataTransfer();
+            selectedFiles.forEach(f => dt.items.add(f));
             input.files = dt.files; render();
+            render();
         };
 
         function render() {
@@ -362,7 +386,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 const reader = new FileReader();
                 reader.onload = e => {
                     const div = document.createElement('div'); div.className = 'preview-item';
-                    div.innerHTML = `<img src="${e.target.result}"><button type="button" class="btn-remove" onclick="remove(${i})">×</button>
+                    div.innerHTML = `
+                        <img src="${e.target.result}">
+                        <button type="button" class="btn-remove" onclick="remove(${i})">×</button>
                         ${i === 0 ? '<div style="position:absolute; bottom:0; width:100%; background:rgba(204,204,255,0.8); color:white; font-size:10px; text-align:center;">메인 이미지</div>' : ''}`;
                     container.appendChild(div);
                     if (i === selectedFiles.length - 1)
@@ -374,7 +400,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         function fillEmptySlots() {
             const currentCount = container.querySelectorAll('.preview-item').length;
-            for (let i = currentCount; i < 9; i++) {
+            for (let i = currentCount; i < 10; i++) {
                 const empty = document.createElement('div');
                 empty.className = 'preview-item empty-slot';
                 empty.innerHTML = '<i class="fas fa-plus"></i>';
@@ -382,6 +408,92 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
         fillEmptySlots();
+    }
+
+
+    // 상품 등록 시 가격 입력 칸에서 스크롤 작동하면 가격 변동되던 에러 방지
+    const priceInput = document.querySelector('input[name="price"]');
+    if (priceInput) {
+        priceInput.addEventListener('wheel', function() {
+            this.blur();
+        });
+    }
+
+    const uploadForm = document.querySelector('form[action*="product_upload"], form[action*="product_modify"]');
+
+    if (uploadForm) {
+        // 브라우저 기본 말풍선 방지
+        uploadForm.setAttribute('novalidate', true);
+
+        uploadForm.addEventListener('submit', function (e) {
+            let isValid = true;
+
+            // 검사할 필드들 설정
+            const fields = [
+                { name: 'title', msg: '상품명을 입력해주세요' },
+                { name: 'category', msg: '카테고리를 선택해주세요' },
+                { name: 'price', msg: '가격을 입력해주세요' },
+                { name: 'content', msg: '상세 설명을 입력해주세요' }
+            ];
+
+            fields.forEach(field => {
+                const input = this.querySelector(`[name="${field.name}"]`);
+                const errorDiv = document.getElementById(`error-${field.name}`);
+
+                // 빈칸, 카테고리 초기값일 때 찾아내기용
+                const isInvalidValue = !input.value ||
+                                     input.value.trim() === "" ||
+                                     input.value === "카테고리 선택" ||
+                                     (input.tagName === 'SELECT' && !input.value);
+
+                if (isInvalidValue) {
+                    isValid = false;
+
+                    // 빨간 테두리
+                    input.classList.add('is-invalid');
+
+                    if (errorDiv) {
+                        errorDiv.innerText = field.msg;
+                        errorDiv.style.display = 'block';
+                    }
+                } else {
+                    // 잘 입력했으면 원래대로
+                    input.classList.remove('is-invalid');
+                    if (errorDiv) {
+                        errorDiv.style.display = 'none';
+                    }
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                e.stopPropagation();
+                // 첫 번째 에러가 난 곳으로 포커스 이동
+                const firstError = this.querySelector('.is-invalid');
+                if (firstError) firstError.focus();
+            }
+        });
+
+        // 사용자가 다시 타이핑을 시작하면 실시간으로 빨간색 지워주기
+        uploadForm.querySelectorAll('.custom-input').forEach(input => {
+            input.addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+                const errorDiv = document.getElementById(`error-${this.name}`);
+                if (errorDiv) {
+                    errorDiv.innerText = '';
+                    errorDiv.style.display = 'none';
+                }
+            });
+
+            // select 박스 전용
+            input.addEventListener('change', function() {
+                if(this.value !== "카테고리 선택") {
+                    this.classList.remove('is-invalid');
+                    const errorDiv = document.getElementById(`error-${this.name}`);
+                    if (errorDiv) errorDiv.style.display = 'none';
+                }
+            });
+        });
     }
 
     // 마이페이지, 판매자페이지 ( mypage.html, seller_profile.html )
@@ -400,35 +512,212 @@ document.addEventListener('DOMContentLoaded', function () {
             prevBtn.disabled = (currentIndex === 0); nextBtn.disabled = (currentIndex >= maxIndex);
         };
 
-        prevBtn.onclick = () => { currentIndex = Math.max(0, currentIndex - 1); updateSlider(); };
-        nextBtn.onclick = () => { currentIndex++; updateSlider(); };
-        window.addEventListener('resize', updateSlider); updateSlider();
-    };
+    // 마이페이지, 판매자페이지 탭구조로 수정 4월21일( mypage.html, seller_profile.html )
+    // 탭 기능 4월21일
+    function initTabs() {
+        const tabButtons = document.querySelectorAll('.summary-box[data-tab]');
+        const tabPanels = document.querySelectorAll('.tab-panel');
 
-    // 슬라이더 실행
-    initSlider('productSliderTrack', 'productPrevBtn', 'productNextBtn');
-    initSlider('wishSliderTrack', 'wishPrevBtn', 'wishNextBtn');
-    initSlider('sellerProductSliderTrack', 'sellerProductPrevBtn', 'sellerProductNextBtn');
+        if (!tabButtons.length || !tabPanels.length) return;
 
-    // 리뷰 더보기 및 상태메시지
-    const toggleBtn = document.getElementById('toggleReviewBtn');
-    if (toggleBtn) {
-        let expanded = false;
-        toggleBtn.onclick = () => {
-            document.querySelectorAll('.review-hidden').forEach(r => r.style.display = expanded ? 'none' : 'flex');
-            expanded = !expanded; toggleBtn.textContent = expanded ? '접기' : '더보기';
-        };
+        // 현재 active 버튼 찾기
+        let activeButton = document.querySelector('.summary-box.active');
+
+        if (activeButton) {
+            const targetId = activeButton.dataset.tab;
+
+            tabPanels.forEach(function (panel) {
+                panel.classList.remove('active');
+            });
+
+            const targetPanel = document.getElementById(targetId);
+            if (targetPanel) {
+                targetPanel.classList.add('active');
+            }
+        }
+
+        // 기존 클릭 이벤트
+        tabButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                const targetId = button.dataset.tab;
+
+                tabButtons.forEach(function (btn) {
+                    btn.classList.remove('active');
+                });
+
+                tabPanels.forEach(function (panel) {
+                    panel.classList.remove('active');
+                });
+
+                button.classList.add('active');
+
+                const targetPanel = document.getElementById(targetId);
+                if (targetPanel) {
+                    targetPanel.classList.add('active');
+                }
+            });
+        });
+    }
+    // 페이지네이션 기능 4월21일 .paged-grid가 있으면 동작
+    function initPagedList(config) {
+        const {
+            listSelector,
+            itemSelector,
+            pageSize,
+            displayType
+        } = config;
+
+        document.querySelectorAll(listSelector).forEach(function (list) {
+            const tabName = list.dataset.tabName;
+            const items = Array.from(list.querySelectorAll(itemSelector));
+            const paginationWrap = document.querySelector(`[data-pagination-for="${tabName}"]`);
+
+            if (!paginationWrap || items.length === 0) return;
+
+            function renderPage(page) {
+                const totalPages = Math.ceil(items.length / pageSize);
+
+                items.forEach(function (item, index) {
+                    const start = (page - 1) * pageSize;
+                    const end = start + pageSize;
+                    item.style.display = (index >= start && index < end) ? displayType : 'none';
+                });
+
+                renderPagination(totalPages, page);
+            }
+
+            function renderPagination(totalPages, currentPage) {
+                paginationWrap.innerHTML = '';
+
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'page-btn';
+                prevBtn.textContent = '‹';
+                prevBtn.disabled = currentPage === 1;
+                prevBtn.addEventListener('click', function () {
+                    if (currentPage > 1) {
+                        renderPage(currentPage - 1);
+                    }
+                });
+                paginationWrap.appendChild(prevBtn);
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = 'page-btn';
+                    if (i === currentPage) {
+                        pageBtn.classList.add('active');
+                    }
+                    pageBtn.textContent = i;
+                    pageBtn.addEventListener('click', function () {
+                        renderPage(i);
+                    });
+                    paginationWrap.appendChild(pageBtn);
+                }
+
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'page-btn';
+                nextBtn.textContent = '›';
+                nextBtn.disabled = currentPage === totalPages;
+                nextBtn.addEventListener('click', function () {
+                    if (currentPage < totalPages) {
+                        renderPage(currentPage + 1);
+                    }
+                });
+                paginationWrap.appendChild(nextBtn);
+            }
+
+            renderPage(1);
+        });
     }
 
-    const editBtn = document.getElementById('statusEditBtn');
-    if (editBtn) {
-        const viewMode = document.getElementById('statusViewMode'), editMode = document.getElementById('statusEditMode');
-        const statusInput = document.getElementById('statusInput'), statusText = document.getElementById('statusText');
+    // 상태메세지
+    function initStatusEdit() {
+        const editBtn = document.getElementById('statusEditBtn');
+        if (!editBtn) return;
+
+        const viewMode = document.getElementById('statusViewMode');
+        const editMode = document.getElementById('statusEditMode');
+        const statusInput = document.getElementById('statusInput');
+        const statusText = document.getElementById('statusText');
+        const cancelBtn = document.getElementById('statusCancelBtn');
+
+        if (!viewMode || !editMode || !statusInput || !statusText) return;
+
         editBtn.onclick = () => {
             statusInput.value = statusText.textContent.trim() === "상태 메시지를 입력하세요" ? "" : statusText.textContent.trim();
-            viewMode.style.display = 'none'; editMode.style.display = 'block'; editBtn.style.display = 'none'; statusInput.focus();
+            viewMode.style.display = 'none';
+            editMode.style.display = 'block';
+            editBtn.style.display = 'none';
+            statusInput.focus();
         };
-        const cancelBtn = document.getElementById('statusCancelBtn');
-        if (cancelBtn) cancelBtn.onclick = () => { editMode.style.display = 'none'; viewMode.style.display = 'block'; editBtn.style.display = 'inline-block'; };
+
+        if (cancelBtn) {
+            cancelBtn.onclick = () => {
+                editMode.style.display = 'none';
+                viewMode.style.display = 'block';
+                editBtn.style.display = 'inline-block';
+            };
+        }
     }
+
+    initTabs();
+
+    initPagedList({
+        listSelector: '.paged-grid',
+        itemSelector: '.product-card-item',
+        pageSize: 8,
+        displayType: 'block'
+    });
+
+    initPagedList({
+        listSelector: '.paged-review-list',
+        itemSelector: '.review-page-item',
+        pageSize: 5,
+        displayType: 'flex'
+    });
+
+    initStatusEdit();
+
+    // 리뷰 글자수 카운트
+    const textarea = document.querySelector('.review-textarea');
+    const counter = document.querySelector('.review-count');
+
+    if (textarea && counter) {
+        textarea.addEventListener('input', function () {
+            counter.textContent = `${this.value.length} / 300`;
+
+        });
+    }
+
+
 });
+
+// 토스트 모든 페이지 기능 공유 함수
+function showToast(message) {
+    const container = document.querySelector('.toast-container');
+    if (!container) return;
+
+    const toastId = 'toast_' + Date.now();
+    const toastHTML = `
+        <div id="${toastId}" class="toast align-items-center text-white border-0 show" role="alert" 
+             style="background-color: #CCCCFF; border-radius: 12px; min-width: 250px; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <div class="d-flex">
+                <div class="toast-body text-center w-100">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <span>${message}</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', toastHTML);
+    const target = document.getElementById(toastId);
+
+    // 사라지는 애니메이션 로직
+    setTimeout(() => {
+        if (target) {
+            target.style.transition = "opacity 0.5s ease";
+            target.style.opacity = '0';
+            setTimeout(() => { target.remove(); }, 500);
+        }
+    }, 2000);
+}
