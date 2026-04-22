@@ -372,50 +372,62 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (selectedFiles.length + newFiles.length > 10) {
                 showToast("사진은 최대 10장만 업로드 가능합니다.");
+                const availableSlots = 10 - selectedFiles.length;
+                selectedFiles = [...selectedFiles, ...newFiles.slice(0, availableSlots)];
+            }
+            else {
+                selectedFiles = [...selectedFiles, ...newFiles];
             }
 
-            selectedFiles = [...selectedFiles, ...Array.from(e.target.files)].slice(0, 10);
-
-            const dt = new DataTransfer();
-            selectedFiles.forEach(f => dt.items.add(f));
-            input.files = dt.files;
-
-            render();
+            updateInputAndRender();
         });
 
         window.remove = function (i) {
             selectedFiles.splice(i, 1);
+            updateInputAndRender();
+        };
+
+        //  input, render 통합 함수 ( 이미지 업로드 중복 방지 )
+        function updateInputAndRender() {
             const dt = new DataTransfer();
             selectedFiles.forEach(f => dt.items.add(f));
-            input.files = dt.files; render();
+            input.files = dt.files;
             render();
-        };
+        }
 
         function render() {
             container.innerHTML = '';
-            if (selectedFiles.length === 0) { fillEmptySlots(); return; }
+
             selectedFiles.forEach((file, i) => {
                 const reader = new FileReader();
                 reader.onload = e => {
-                    const div = document.createElement('div'); div.className = 'preview-item';
+                    const div = document.createElement('div');
+                    div.className = 'preview-item';
                     div.innerHTML = `
                         <img src="${e.target.result}">
                         <button type="button" class="btn-remove" onclick="remove(${i})">×</button>
-                        ${i === 0 ? '<div style="position:absolute; bottom:0; width:100%; background:rgba(204,204,255,0.8); color:white; font-size:10px; text-align:center;">메인 이미지</div>' : ''}`;
+                        ${i === 0 ? '<div class="main-badge">메인 이미지</div>' : ''}`;
                     container.appendChild(div);
-                    if (i === selectedFiles.length - 1)
+
+                    // 마지막 이미지가 그려진 직후에만 빈 슬롯 채움
+                    if (container.querySelectorAll('.preview-item:not(.empty-slot)').length === selectedFiles.length) {
                         fillEmptySlots();
+                    }
                 };
                 reader.readAsDataURL(file);
             });
+
+            // 이미지가 하나도 없을 때 빈 슬롯 출력
+            if (selectedFiles.length === 0) fillEmptySlots();
         }
 
         function fillEmptySlots() {
-            const currentCount = container.querySelectorAll('.preview-item').length;
+            const currentCount = selectedFiles.length;
             for (let i = currentCount; i < 10; i++) {
                 const empty = document.createElement('div');
                 empty.className = 'preview-item empty-slot';
                 empty.innerHTML = '<i class="fas fa-plus"></i>';
+                empty.onclick = () => input.click();
                 container.appendChild(empty);
             }
         }
@@ -440,6 +452,21 @@ document.addEventListener('DOMContentLoaded', function () {
         uploadForm.addEventListener('submit', function (e) {
             let isValid = true;
 
+            // 사진 업로드 체크
+            const errorImages = document.getElementById('error-images');
+
+            if (typeof selectedFiles === 'undefined' || selectedFiles.length === 0) {
+                isValid = false;
+
+                if (errorImages) {
+                    errorImages.innerText = '최소 1장의 사진을 등록해야 합니다.';
+                    errorImages.style.display = 'block';
+                }
+            }
+            else {
+                if (errorImages) errorImages.style.display = 'none';
+            }
+
             // 검사할 필드들 설정
             const fields = [
                 { name: 'title', msg: '상품명을 입력해주세요' },
@@ -448,31 +475,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 { name: 'content', msg: '상세 설명을 입력해주세요' }
             ];
 
+            // 텍스트 에러 테스트
             fields.forEach(field => {
                 const input = this.querySelector(`[name="${field.name}"]`);
                 const errorDiv = document.getElementById(`error-${field.name}`);
 
-                // 빈칸, 카테고리 초기값일 때 찾아내기용
-                const isInvalidValue = !input.value ||
-                    input.value.trim() === "" ||
-                    input.value === "카테고리 선택" ||
-                    (input.tagName === 'SELECT' && !input.value);
+                if (!input.value || input.value.trim() === "" || input.value === "카테고리 선택") {
 
                 if (isInvalidValue) {
                     isValid = false;
-
-                    // 빨간 테두리
                     input.classList.add('is-invalid');
-
                     if (errorDiv) {
                         errorDiv.innerText = field.msg;
-                        errorDiv.style.display = 'block';
-                    }
-                } else {
-                    // 잘 입력했으면 원래대로
-                    input.classList.remove('is-invalid');
-                    if (errorDiv) {
-                        errorDiv.style.display = 'none';
+                        errorDiv.classList.add('show-error');
                     }
                 }
             });
@@ -481,28 +496,30 @@ document.addEventListener('DOMContentLoaded', function () {
                 e.preventDefault();
                 e.stopPropagation();
                 // 첫 번째 에러가 난 곳으로 포커스 이동
-                const firstError = this.querySelector('.is-invalid');
-                if (firstError) firstError.focus();
+                const firstError = this.querySelector('.is-invalid') || errorImages;
+                if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         });
 
-        // 사용자가 다시 타이핑을 시작하면 실시간으로 빨간색 지워주기
+        // 실시간 에러 제거
         uploadForm.querySelectorAll('.custom-input').forEach(input => {
-            input.addEventListener('input', function () {
+
+            // 글자 입력할 때
+            input.addEventListener('input', function() {
                 this.classList.remove('is-invalid');
                 const errorDiv = document.getElementById(`error-${this.name}`);
                 if (errorDiv) {
-                    errorDiv.innerText = '';
-                    errorDiv.style.display = 'none';
+                    errorDiv.classList.remove('show-error'); // 클래스 제거
                 }
             });
 
-            // select 박스 전용
-            input.addEventListener('change', function () {
-                if (this.value !== "카테고리 선택") {
+
+            // 카테고리 선택할 때
+            input.addEventListener('change', function() {
+                if(this.value !== "" && this.value !== "카테고리 선택") {
                     this.classList.remove('is-invalid');
                     const errorDiv = document.getElementById(`error-${this.name}`);
-                    if (errorDiv) errorDiv.style.display = 'none';
+                    if (errorDiv) errorDiv.classList.remove('show-error');
                 }
             });
         });
@@ -687,6 +704,13 @@ document.addEventListener('DOMContentLoaded', function () {
         displayType: 'flex'
     });
 
+    initPagedList({
+        listSelector: '.paged-grid[data-tab-name="mainList"]',
+        itemSelector: '.product-item',
+        pageSize: 20,
+        displayType: 'block'
+    });
+
     initStatusEdit();
 
     // 리뷰 글자수 카운트
@@ -699,8 +723,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         });
     }
-
-
 });
 
 // 토스트 모든 페이지 기능 공유 함수

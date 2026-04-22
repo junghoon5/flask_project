@@ -55,6 +55,7 @@ def edit_profile():
 
         elif action == 'save':
             # 검증방식 추가로 인해 수정 4월20일
+            old_nickname = user.nickname
             new_nickname = request.form.get('nickname', '').strip()
             email = request.form.get('email', '').strip()
             phone = request.form.get('phone', '').strip().replace(' ', '')
@@ -73,7 +74,6 @@ def edit_profile():
                 flash('이미 사용 중인 닉네임입니다.')
                 return render_template('personal/edit_profile.html', user=user)
 
-
             # 이메일 형식 검증하기 4월20일
             email_pattern = r'^[\w\.-]+@[\w\.-]+\.[a-zA-Z]{3,}$'
             if not re.match(email_pattern, email):
@@ -86,6 +86,20 @@ def edit_profile():
                 flash('올바른 전화번호 형식을 입력해주세요.')
                 return render_template('personal/edit_profile.html', user=user)
 
+            nickname_changed = (old_nickname != new_nickname)
+
+            # 닉네임 바뀌었을 때 파일명 변경 예외처리
+            if nickname_changed:
+                old_folder = os.path.join(current_app.root_path, 'static', 'uploads', 'profiles', old_nickname)
+                new_folder = os.path.join(current_app.root_path, 'static', 'uploads', 'profiles', new_nickname)
+
+                if os.path.exists(old_folder):
+                    os.rename(old_folder, new_folder)
+
+                if user.profile_image:
+                    user.profile_image = user.profile_image.replace(f'/profiles/{old_nickname}/',
+                                                                    f'/profiles/{new_nickname}/')
+
             # 변수저장
             user.nickname = new_nickname
             user.email = email
@@ -95,39 +109,21 @@ def edit_profile():
             file = request.files.get('profile_image')
 
             if file and file.filename != '':
-                filename = secure_filename(file.filename)
-
-                # 확장자 추출
-                name, ext = os.path.splitext(filename)
-                ext = ext.lower()
-
-                allowed_ext = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
-                if ext not in allowed_ext:
-                    flash('이미지 파일만 업로드할 수 있습니다.')
-                    return render_template('personal/edit_profile.html', user=user)
-
-                # 파일명 랜덤 생성
-                new_filename = f"{uuid.uuid4().hex}{ext}"
-
-                # 프로필이미지 저장 폴더 4월17일
-                upload_folder = os.path.join(current_app.root_path, 'static', 'uploads', 'profiles')
-                # static에 폴더가 없으면 생성 4월17일
+                upload_folder = os.path.join(current_app.root_path, 'static', 'uploads', 'profiles', new_nickname)
                 os.makedirs(upload_folder, exist_ok=True)
 
-                # 기존 프로필 이미지 삭제 4월17일
+                # 중복 방지
                 if user.profile_image:
-                    old_file_path = os.path.join(upload_folder, user.profile_image)
-                    if os.path.exists(old_file_path):
-                        os.remove(old_file_path)
+                    # DB에 저장된 경로에서 파일명만 뽑아서 삭제
+                    old_path = os.path.join(current_app.root_path, user.profile_image.lstrip('/'))
+                    if os.path.exists(old_path):
+                        os.remove(old_path)
 
-                # 저장 경로
-                file_path = os.path.join(upload_folder, new_filename)
+                filename = file.filename
+                file.save(os.path.join(upload_folder, filename))
 
-                # 파일 저장
-                file.save(file_path)
-
-                # DB에 파일명 저장
-                user.profile_image = new_filename
+                # DB에 웹 경로 업데이트
+                user.profile_image = f'/static/uploads/profiles/{new_nickname}/{filename}'
 
             db.session.commit()
             flash('회원정보가 저장되었습니다.')

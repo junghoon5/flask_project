@@ -192,8 +192,8 @@
         <div class="d-flex align-items-center py-4 border-bottom">
             <div class="seller-profile-circle">
                 {% if product.seller.profile_image %}
-                <img src="{{ url_for('static', filename='uploads/profiles/' + product.seller.profile_image) }}"
-                    alt="프로필" class="seller-profile-img">
+                    <img src="{{ product.seller.profile_image }}"
+                         alt="프로필" class="seller-profile-img">
                 {% else %}
                 <span class="default-profile-text">
                     {{ (product.seller.nickname or "U")[0] | upper }}

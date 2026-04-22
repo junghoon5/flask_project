@@ -33,36 +33,58 @@
                 <a href="{{ url_for('main.index') }}" class="custom-btn mb-4">메인으로</a>
             </div>
             <div class="row" id="product-grid">
-                {% for product in product_list %}
-                    <div class="col-md-3 col-6 mb-4 product-item" data-status="{{ product.status_id }}">
-                        <a href="{{ url_for('items.product_details', item_id=product.id) }}" class="text-decoration-none text-dark">
-                            <div class="product-card">
-                                <div class="img-wrapper">
-                                    <img src="{{ product.images[0].image_url if product.images else '/static/img/default.png' }}"
-                                         class="product-img"
-                                         alt="{{ product.item_title }}">
-                                    {% if product.status_id == 2 %}
-                                        <div class="product-status-overlay">예약중</div>
-                                    {% elif product.status_id == 3%}
-                                        <div class="product-status-overlay">판매완료</div>
-                                    {% endif %}
-                                </div>
-                                <div class="product-info p-3 text-center">
-                                    <div class="fw-bold text-truncate mb-1">{{ product.item_title }}</div>
-                                    <div class="text-muted" style="font-size: 0.9rem;">
-                                        {{ "{:,}원".format(product.item_price) }}
+                {% if product_list.items %}
+                    {% for product in product_list %}
+                        <div class="col-md-3 col-6 mb-4 product-item" data-status="{{ product.status_id }}">
+                            <a href="{{ url_for('items.product_details', item_id=product.id) }}" class="text-decoration-none text-dark">
+                                <div class="product-card">
+                                    <div class="img-wrapper">
+                                        <img src="{{ product.images[0].image_url if product.images else '/static/img/default.png' }}"
+                                             class="product-img"
+                                             alt="{{ product.item_title }}">
+                                        {% if product.status_id == 2 %}
+                                            <div class="product-status-overlay">예약중</div>
+                                        {% elif product.status_id == 3%}
+                                            <div class="product-status-overlay">판매완료</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="product-info p-3 text-center">
+                                        <div class="fw-bold text-truncate mb-1">{{ product.item_title }}</div>
+                                        <div class="text-muted" style="font-size: 0.9rem;">
+                                            {{ "{:,}원".format(product.item_price) }}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </a>
-                    </div>
+                            </a>
+                        </div>
+                    {% endfor %}
                 {% else %}
                     <div class="col-12 text-center py-5">
                         <div class="py-5" style="background-color: #f8f9fa; border-radius: 12px; border: 1px dashed #ccc;">
                             <p class="text-muted mb-0">등록된 상품이 없습니다.</p>
                         </div>
                     </div>
+                {% endif %}
+            </div>
+            <div class="pagination-wrap mt-4">
+                {% if product_list.has_prev %}
+                    <a class="page-btn" href="{{ url_for('items.product_categories', category_id=category_id, page=product_list.prev_num) }}">‹</a>
+                {% endif %}
+
+                {% for page_num in product_list.iter_pages() %}
+                    {% if page_num %}
+                        <a class="page-btn {% if page_num == product_list.page or (not product_list.page and page_num == 1) %}active{% endif %}"
+                           href="{{ url_for('items.product_categories', category_id=category_id, page=page_num) }}">
+                            {{ page_num }}
+                        </a>
+                    {% else %}
+                        <span class="page-btn disabled">...</span>
+                    {% endif %}
                 {% endfor %}
+
+                {% if product_list.has_next %}
+                    <a class="page-btn" href="{{ url_for('items.product_categories', category_id=category_id, page=product_list.next_num) }}">›</a>
+                {% endif %}
             </div>
         </div>
     </div>

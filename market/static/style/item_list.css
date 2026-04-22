@@ -13,33 +13,81 @@
 }
 
 .product-card:hover {
-    transform: translateY(-8px); /* 위로 슥 올라가게 */
-    box-shadow: 0 10px 20px rgba(204, 204, 255, 0.3); /* 보라색 느낌의 그림자 */
-    border-color: #CCCCFF; /* 테두리도 살짝 보라색으로 */
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(204, 204, 255, 0.3);
+    border-color: #8479ED;
+}
+
+/* 이미지 및 오버레이 (main.css 기반) */
+.img-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
 }
 
 .product-img {
     width: 100%;
     height: 100%;
-    aspect-ratio: 1 / 1;
-    background-color: #f8f9fa;
     object-fit: cover;
-    border-radius: 12px 12px 0 0;
     transition: transform 0.3s ease;
 }
 
-.filter-link {
+.product-status-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #FFFFFF;
+    font-weight: bold; font-size: 18px;
+    display: flex; justify-content: center; align-items: center;
+    z-index: 5;
+}
+
+/* 페이지네이션 버튼 (여기는 새로 추가된 구조니까 스타일 정의) */
+.pagination-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     text-decoration: none;
-    color: #999;
-    font-size: 12rem;
-    transition: color 0.2s;
+    min-width: 38px;
+    height: 38px;
+    border: 1px solid #ddd6ff;
+    background-color: #ffffff;
+    color: #9C96F3;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    transition: all 0.2s ease;
 }
 
-.filter-link:hover {
-    color: #CCCCFF;
-    text-decoration: underline;
+.page-btn:hover:not(.disabled) {
+    background-color: #f4f2ff;
+    border-color: #8479ED;
 }
 
+.page-btn.active {
+    background: linear-gradient(180deg, #f7f5ff 0%, #efeaff 100%);
+    border-color: #8479ED;
+    color: #5d50d8;
+    box-shadow: 0 8px 18px rgba(124, 111, 246, 0.14);
+}
+
+.page-btn.disabled {
+    opacity: 0.45;
+    cursor: default;
+    color: #ccc;
+    border-color: #eee;
+}
+
+/* 카테고리 링크 */
 .category-link {
     display: block;
     padding: 8px 0;
@@ -47,25 +95,6 @@
     text-decoration: none;
 }
 
-.category-link:hover { color: #CCCCFF; }
-
-/* 예약중, 판매완료 상태 시 이미지 위에 안내 문구 */
-.img-wrapper {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1/1; /* 정사각형 유지 */
-    overflow: hidden;
-    border-radius: 12px 12px 0 0; /* product-card의 상단 모서리랑 맞춤 */
-}
-
-/* 상태 표시 오버레이 (판매완료/예약중 공통) */
-.product-status-overlay {
-    position: absolute; /* .img-wrapper를 기준으로 배치 */
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: #FFFFFF;
-    font-weight: bold; font-size: 18px;
-    display: flex; justify-content: center; align-items: center; /* 글자를 중앙 배치 */
-    opacity: 1; /* 평소에도 보이게 */
-    z-index: 5; /* 이미지보다 위에 */
+.category-link:hover {
+    color: #8479ED;
 }

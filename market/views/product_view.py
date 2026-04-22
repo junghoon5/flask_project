@@ -71,12 +71,14 @@ def product_upload():
             errors.append("상품 상세 설명을 적어주세요")
 
         if errors:
-            for error in errors:
-                flash(error, "error")
             # 입력 페이지로 이동
             return render_template('items/write.html',
                                    categories=categories,
-                                   product=None)
+                                   product=None,
+                                   title=title,
+                                   price=price,
+                                   content=content,
+                                   category_id=int(category_id) if category_id else None)
 
         # 가격 예외처리
         try:
@@ -208,8 +210,6 @@ def modify_status(item_id):
 
     new_status = request.form.get('status_id', type=int)
 
-
-
     if not new_status:
         flash('변경할 상품 상태를 찾을 수 없습니다.')
         return redirect(url_for('items.product_details', item_id=item_id))
@@ -278,7 +278,7 @@ def complete_deal(item_id):
         product.status_id = 3   # 판매완료
         db.session.commit()
 
-        flash('거래 정보가 등록되었고 상품이 판매완료로 변경되었습니다.')
+        flash('등록이 완료되었습니다.')
         return redirect(url_for('items.product_details', item_id=item_id))
 
     return render_template('items/complete_deal.html', product=product)
@@ -288,9 +288,11 @@ def complete_deal(item_id):
 def product_categories(category_id):
 
     cat = Category.query.get_or_404(category_id)
+    page = request.args.get('page', 1, type=int)
     # 판매중 기준 우선 및 최신순 정렬
-    category_items = Item.query.filter_by(category_id=category_id, is_deleted=False)\
-                    .order_by(Item.status_id.asc(), Item.created_at.desc()).all()
+    category_items = Item.query.filter_by(category_id=category_id, is_deleted=False) \
+        .order_by(Item.status_id.asc(), Item.created_at.desc()) \
+        .paginate(page=page, per_page=20)
 
     all_categories = Category.query.all()
 
@@ -300,8 +302,10 @@ def product_categories(category_id):
 # 필터링 (거래 가능한 상품만 보기) 페이지
 @bp.route('/product-status/<int:item_status_id>')
 def product_statuses(item_status_id):
-    items = Item.query.filter_by(status_id=item_status_id, is_deleted=False)\
-            .order_by(Item.created_at.desc()).all()
+    page = request.args.get('page', 1, type=int)
+    items = Item.query.filter_by(status_id=item_status_id, is_deleted=False) \
+        .order_by(Item.created_at.desc()) \
+        .paginate(page=page, per_page=20)
 
     all_categories = Category.query.all()
 
@@ -348,11 +352,11 @@ def comment_delete(comment_id):
 @bp.route('/product/modify/<int:item_id>', methods=('GET', 'POST'))
 @login_required
 def product_modify(item_id):
-    # 1. 수정할 상품 데이터를 DB에서 가져오기
+    # 수정할 상품 데이터를 DB에서 가져오기
     product = Item.query.get_or_404(item_id)
     categories = Category.query.all()
 
-    # 2. 권한 확인
+    # 권한 확인
     if g.user.id != product.user_id:
         flash("수정 권한이 없습니다.", "error")
         return redirect(url_for('items.product_details', item_id=item_id))
@@ -368,10 +372,44 @@ def product_modify(item_id):
             flash("모든 항목을 입력해주세요!", "error")
             return render_template('items/write.html', product=product, categories=categories)
 
+        # 닉네임 변경 시 기존 이미지 경로 이사 예외처리
+        for img in product.images:
+            if f'/static/uploads/{g.user.nickname}/' not in img.image_url:
+                # 옛날 닉네임 부분을 현재 g.user.nickname으로 교체
+                # 예: /static/uploads/옛날닉네임/상품명/...
+                path_parts = img.image_url.split('/')
+                if len(path_parts) > 3:
+                    old_nickname = path_parts[3]
+                    img.image_url = img.image_url.replace(f'/uploads/{old_nickname}/', f'/uploads/{g.user.nickname}/')
+
         product.item_title = title
         product.item_description = content
         product.category_id = int(category_id)
         product.item_price = int(str(price).replace(',', '').strip())
+
+        if 'images' in request.files:
+            files = request.files.getlist('images')
+
+            # 현재 닉네임과 수정된 상품명으로 폴더 경로 설정
+            upload_path = os.path.join(current_app.root_path, 'static', 'uploads', f'{g.user.nickname}', f'{title}')
+            os.makedirs(upload_path, exist_ok=True)
+
+            for file in files:
+                if file and file.filename != '':
+                    filename = file.filename
+
+                    # 파일명 중복 체크
+                    save_path = os.path.join(upload_path, filename)
+                    if os.path.exists(save_path):
+                        filename = f"{datetime.now().strftime('%M%S')}_{filename}"
+                        save_path = os.path.join(upload_path, filename)
+
+                    file.save(save_path)
+
+                    # DB에 새 이미지 정보 추가 - 기존 것은 유지하고 새 이미지 추가만
+                    web_path = f'/static/uploads/{g.user.nickname}/{title}/{filename}'
+                    new_img = ItemImage(item_id=product.id, image_url=web_path)
+                    db.session.add(new_img)
 
         db.session.commit()
         flash("수정이 완료되었습니다!", "success")
