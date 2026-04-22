@@ -3,7 +3,7 @@ import os
 from flask import Blueprint, render_template, request, url_for, redirect, g, flash, current_app
 from market.views.auth_view import login_required
 from market import db
-from market.models import User, Item, Category, Comment, ItemStatus, ItemImage, Deal
+from market.models import User, Item, Category, Comment, ItemStatus, ItemImage, Deal, Favorite
 from werkzeug.utils import secure_filename
 
 from datetime import datetime  # 날짜 기능을 쓰기 위해 추가
@@ -71,12 +71,14 @@ def product_upload():
             errors.append("상품 상세 설명을 적어주세요")
 
         if errors:
-            for error in errors:
-                flash(error, "error")
             # 입력 페이지로 이동
             return render_template('items/write.html',
                                    categories=categories,
-                                   product=None)
+                                   product=None,
+                                   title=title,
+                                   price=price,
+                                   content=content,
+                                   category_id=int(category_id) if category_id else None)
 
         # 가격 예외처리
         try:
@@ -136,20 +138,65 @@ def product_upload():
     return render_template('items/write.html', categories = categories)
 
 
-# 상품 상세페이지 (4월17일 product_list 추가함)
+# 상품 상세페이지 (4월22일 수정함)
 @bp.route('/product-details/<int:item_id>')
 def product_details(item_id):
     # DB에서 해당 ID의 상품 하나 가져옴
     product = Item.query.get_or_404(item_id)
     cat = Category.query.get(product.category_id)
     status_list = ItemStatus.query.all()
+    is_wished = False
+    if g.user:
+        # Favorite 모델에서 현재 유저와 상품 ID가 매칭되는 데이터가 있는지 확인
+        f = Favorite.query.filter_by(user_id=g.user.id, item_id=item_id).first()
+        if f:
+            is_wished = True
+    # 현재 상품(item_id)을 찜한 모든 데이터의 개수를 DB에서 직접 셉니다.
+    wish_count = Favorite.query.filter_by(item_id=item_id).count()
     product_list = Item.query.filter(
         Item.user_id == product.user_id,
         Item.id != item_id,
         Item.is_deleted == False  # 삭제되지 않은 상품만
     ).order_by(Item.created_at.desc()).limit(6).all()
 
-    return render_template('items/PDP.html', product = product, cat = cat, status_list=status_list, product_list=product_list)
+    return render_template('items/PDP.html', product = product, cat = cat, status_list=status_list, product_list=product_list,is_wished=is_wished,wish_count=wish_count)
+
+
+# --- 찜하기 토글 (추가/해제) 기능 4월22일 ---
+@bp.route('/wishlist/toggle/<int:item_id>')
+@login_required
+def toggle_favorite(item_id):
+    item = Item.query.get_or_404(item_id)
+    # 이미 찜했는지 확인
+    f = Favorite.query.filter_by(user_id=g.user.id, item_id=item_id).first()
+
+    if f:
+        # 이미 있다면 삭제 (찜 해제)
+        db.session.delete(f)
+        db.session.commit()
+        flash("찜 목록에서 제거되었습니다.")
+    else:
+        # 없다면 추가 (찜 등록)
+        new_f = Favorite(user_id=g.user.id, item_id=item_id)
+        db.session.add(new_f)
+        db.session.commit()
+        flash("찜 목록에 추가되었습니다!")
+
+    return redirect(url_for('items.product_details', item_id=item_id))
+
+
+# --- 마이페이지용 찜 삭제 기능 (창환 님이 에러 났던 부분) ---
+@bp.route('/wishlist/delete/<int:item_id>')
+@login_required
+def remove_favorite(item_id):
+    f = Favorite.query.filter_by(user_id=g.user.id, item_id=item_id).first()
+    if f:
+        db.session.delete(f)
+        db.session.commit()
+        flash("찜 목록에서 삭제되었습니다.")
+
+    # 삭제 후 다시 마이페이지로 이동
+    return redirect(url_for('personal.mypage'))
 
 # PDP.html 상품 상태 게시글 업로드 유저만 수정 가능하고 이외의 유저는 수정 불가능 함수 4월21일 수정
 @bp.route('/modify-status/<int:item_id>', methods=['POST'])
@@ -163,32 +210,20 @@ def modify_status(item_id):
 
     new_status = request.form.get('status_id', type=int)
 
-    if new_status:
-        product.status_id = int(new_status)
-        db.session.commit()
-        flash('변경이 완료되었습니다')
-
     if not new_status:
         flash('변경할 상품 상태를 찾을 수 없습니다.')
         return redirect(url_for('items.product_details', item_id=item_id))
 
-    # 판매완료(3)로 변경하려는 경우에는 바로 저장하지 않고 구매자 입력 페이지로 이동
-    if new_status == 3:
-        existing_deal = Deal.query.filter_by(item_id=product.id).first()
-
-        # 이미 판매완료 처리와 거래 등록이 끝난 상품이면 다시 입력 페이지로 보내지 않음
-        if product.status_id == 3 and existing_deal:
-            flash('이미 판매완료 처리된 상품입니다.')
-            return redirect(url_for('items.product_details', item_id=item_id))
-
-        return redirect(url_for('items.complete_deal', item_id=item_id))
-
     existing_deal = Deal.query.filter_by(item_id=product.id).first()
 
-    # 이미 거래가 등록된 상품은 판매완료 외 다른 상태로 되돌릴 수 없음
+    # 이미 거래가 등록된 상품은 상태변경 불가 4월22일
     if existing_deal:
         flash('거래가 등록된 상품은 상태를 다시 변경할 수 없습니다.')
         return redirect(url_for('items.product_details', item_id=item_id))
+
+    # 판매완료(3)로 변경하려는 경우에는 바로 저장하지 않고 구매자 입력 페이지로 이동 거래상대저장 로직으로 역활중복이 생겨서 수정 4월22일
+    if new_status == 3:
+        return redirect(url_for('items.complete_deal', item_id=item_id))
 
     # 판매중 / 예약중은 기존처럼 바로 변경
     product.status_id = new_status
@@ -243,7 +278,7 @@ def complete_deal(item_id):
         product.status_id = 3   # 판매완료
         db.session.commit()
 
-        flash('거래 정보가 등록되었고 상품이 판매완료로 변경되었습니다.')
+        flash('등록이 완료되었습니다.')
         return redirect(url_for('items.product_details', item_id=item_id))
 
     return render_template('items/complete_deal.html', product=product)
@@ -253,9 +288,11 @@ def complete_deal(item_id):
 def product_categories(category_id):
 
     cat = Category.query.get_or_404(category_id)
+    page = request.args.get('page', 1, type=int)
     # 판매중 기준 우선 및 최신순 정렬
-    category_items = Item.query.filter_by(category_id=category_id, is_deleted=False)\
-                    .order_by(Item.status_id.asc(), Item.created_at.desc()).all()
+    category_items = Item.query.filter_by(category_id=category_id, is_deleted=False) \
+        .order_by(Item.status_id.asc(), Item.created_at.desc()) \
+        .paginate(page=page, per_page=20)
 
     all_categories = Category.query.all()
 
@@ -265,8 +302,10 @@ def product_categories(category_id):
 # 필터링 (거래 가능한 상품만 보기) 페이지
 @bp.route('/product-status/<int:item_status_id>')
 def product_statuses(item_status_id):
-    items = Item.query.filter_by(status_id=item_status_id, is_deleted=False)\
-            .order_by(Item.created_at.desc()).all()
+    page = request.args.get('page', 1, type=int)
+    items = Item.query.filter_by(status_id=item_status_id, is_deleted=False) \
+        .order_by(Item.created_at.desc()) \
+        .paginate(page=page, per_page=20)
 
     all_categories = Category.query.all()
 
@@ -313,11 +352,11 @@ def comment_delete(comment_id):
 @bp.route('/product/modify/<int:item_id>', methods=('GET', 'POST'))
 @login_required
 def product_modify(item_id):
-    # 1. 수정할 상품 데이터를 DB에서 가져오기
+    # 수정할 상품 데이터를 DB에서 가져오기
     product = Item.query.get_or_404(item_id)
     categories = Category.query.all()
 
-    # 2. 권한 확인
+    # 권한 확인
     if g.user.id != product.user_id:
         flash("수정 권한이 없습니다.", "error")
         return redirect(url_for('items.product_details', item_id=item_id))
@@ -333,10 +372,44 @@ def product_modify(item_id):
             flash("모든 항목을 입력해주세요!", "error")
             return render_template('items/write.html', product=product, categories=categories)
 
+        # 닉네임 변경 시 기존 이미지 경로 이사 예외처리
+        for img in product.images:
+            if f'/static/uploads/{g.user.nickname}/' not in img.image_url:
+                # 옛날 닉네임 부분을 현재 g.user.nickname으로 교체
+                # 예: /static/uploads/옛날닉네임/상품명/...
+                path_parts = img.image_url.split('/')
+                if len(path_parts) > 3:
+                    old_nickname = path_parts[3]
+                    img.image_url = img.image_url.replace(f'/uploads/{old_nickname}/', f'/uploads/{g.user.nickname}/')
+
         product.item_title = title
         product.item_description = content
         product.category_id = int(category_id)
         product.item_price = int(str(price).replace(',', '').strip())
+
+        if 'images' in request.files:
+            files = request.files.getlist('images')
+
+            # 현재 닉네임과 수정된 상품명으로 폴더 경로 설정
+            upload_path = os.path.join(current_app.root_path, 'static', 'uploads', f'{g.user.nickname}', f'{title}')
+            os.makedirs(upload_path, exist_ok=True)
+
+            for file in files:
+                if file and file.filename != '':
+                    filename = file.filename
+
+                    # 파일명 중복 체크
+                    save_path = os.path.join(upload_path, filename)
+                    if os.path.exists(save_path):
+                        filename = f"{datetime.now().strftime('%M%S')}_{filename}"
+                        save_path = os.path.join(upload_path, filename)
+
+                    file.save(save_path)
+
+                    # DB에 새 이미지 정보 추가 - 기존 것은 유지하고 새 이미지 추가만
+                    web_path = f'/static/uploads/{g.user.nickname}/{title}/{filename}'
+                    new_img = ItemImage(item_id=product.id, image_url=web_path)
+                    db.session.add(new_img)
 
         db.session.commit()
         flash("수정이 완료되었습니다!", "success")
@@ -355,8 +428,9 @@ def product_delete(item_id):
         # 본인이 아니면 상세 페이지로 다시 돌려보내기
         return redirect(url_for('items.product_details', item_id=item_id))
 
-    db.session.delete(item)
+    item.is_deleted = True
     db.session.commit()
+    flash('상품이 삭제되었습니다.')
 
     # 삭제 후에는 메인 페이지로 이동합니다.
     return redirect(url_for('main.index'))

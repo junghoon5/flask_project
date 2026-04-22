@@ -55,6 +55,7 @@ def edit_profile():
 
         elif action == 'save':
             # 검증방식 추가로 인해 수정 4월20일
+            old_nickname = user.nickname
             new_nickname = request.form.get('nickname', '').strip()
             email = request.form.get('email', '').strip()
             phone = request.form.get('phone', '').strip().replace(' ', '')
@@ -73,7 +74,6 @@ def edit_profile():
                 flash('이미 사용 중인 닉네임입니다.')
                 return render_template('personal/edit_profile.html', user=user)
 
-
             # 이메일 형식 검증하기 4월20일
             email_pattern = r'^[\w\.-]+@[\w\.-]+\.[a-zA-Z]{3,}$'
             if not re.match(email_pattern, email):
@@ -86,6 +86,20 @@ def edit_profile():
                 flash('올바른 전화번호 형식을 입력해주세요.')
                 return render_template('personal/edit_profile.html', user=user)
 
+            nickname_changed = (old_nickname != new_nickname)
+
+            # 닉네임 바뀌었을 때 파일명 변경 예외처리
+            if nickname_changed:
+                old_folder = os.path.join(current_app.root_path, 'static', 'uploads', 'profiles', old_nickname)
+                new_folder = os.path.join(current_app.root_path, 'static', 'uploads', 'profiles', new_nickname)
+
+                if os.path.exists(old_folder):
+                    os.rename(old_folder, new_folder)
+
+                if user.profile_image:
+                    user.profile_image = user.profile_image.replace(f'/profiles/{old_nickname}/',
+                                                                    f'/profiles/{new_nickname}/')
+
             # 변수저장
             user.nickname = new_nickname
             user.email = email
@@ -95,39 +109,21 @@ def edit_profile():
             file = request.files.get('profile_image')
 
             if file and file.filename != '':
-                filename = secure_filename(file.filename)
-
-                # 확장자 추출
-                name, ext = os.path.splitext(filename)
-                ext = ext.lower()
-
-                allowed_ext = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
-                if ext not in allowed_ext:
-                    flash('이미지 파일만 업로드할 수 있습니다.')
-                    return render_template('personal/edit_profile.html', user=user)
-
-                # 파일명 랜덤 생성
-                new_filename = f"{uuid.uuid4().hex}{ext}"
-
-                # 프로필이미지 저장 폴더 4월17일
-                upload_folder = os.path.join(current_app.root_path, 'static', 'uploads', 'profiles')
-                # static에 폴더가 없으면 생성 4월17일
+                upload_folder = os.path.join(current_app.root_path, 'static', 'uploads', 'profiles', new_nickname)
                 os.makedirs(upload_folder, exist_ok=True)
 
-                # 기존 프로필 이미지 삭제 4월17일
+                # 중복 방지
                 if user.profile_image:
-                    old_file_path = os.path.join(upload_folder, user.profile_image)
-                    if os.path.exists(old_file_path):
-                        os.remove(old_file_path)
+                    # DB에 저장된 경로에서 파일명만 뽑아서 삭제
+                    old_path = os.path.join(current_app.root_path, user.profile_image.lstrip('/'))
+                    if os.path.exists(old_path):
+                        os.remove(old_path)
 
-                # 저장 경로
-                file_path = os.path.join(upload_folder, new_filename)
+                filename = file.filename
+                file.save(os.path.join(upload_folder, filename))
 
-                # 파일 저장
-                file.save(file_path)
-
-                # DB에 파일명 저장
-                user.profile_image = new_filename
+                # DB에 웹 경로 업데이트
+                user.profile_image = f'/static/uploads/profiles/{new_nickname}/{filename}'
 
             db.session.commit()
             flash('회원정보가 저장되었습니다.')
@@ -159,11 +155,7 @@ def change_password():
         if new_password != confirm_password:
             flash('새 비밀번호와 비밀번호 확인이 일치하지 않습니다.')
             return render_template('personal/change_password.html', user=user)
-
-        if len(new_password) < 8:
-            flash('새 비밀번호는 8자 이상 입력해주세요.')
-            return render_template('personal/change_password.html', user=user)
-
+        # 8글자 제한 삭제 4월22일
         if check_password_hash(user.password, new_password):
             flash('현재 비밀번호와 다른 비밀번호를 입력해주세요.')
             return render_template('personal/change_password.html', user=user)
@@ -212,14 +204,13 @@ def seller_profile(user_id):
     can_write_review = False
 
     if g.user:
-        deal = Deal.query.filter_by(
+        deals = Deal.query.filter_by(
             seller_id=seller.id,
             buyer_id=g.user.id,
             deal_status='completed'
-        ).first()
+        ).all()
 
-        if deal:
-            # 이미 리뷰 썼는지 체크
+        for deal in deals:
             existing_review = Review.query.filter_by(
                 deal_id=deal.id,
                 reviewer_id=g.user.id
@@ -227,6 +218,7 @@ def seller_profile(user_id):
 
             if not existing_review:
                 can_write_review = True
+                break
 
     return render_template(
         'personal/seller_profile.html',
@@ -273,17 +265,25 @@ def transaction_history():
         Item.is_deleted == False,
         ItemStatus.item_status == '예약중'
     ).order_by(Item.created_at.desc()).all()
-
-    completed_items = Item.query.join(ItemStatus).filter(
+    # 판매완료 목록에 구매자와 거래시간 표기 4월22일
+    completed_deals = Deal.query.join(Item).join(ItemStatus).filter(
         Item.user_id == user.id,
         Item.is_deleted == False,
-        ItemStatus.item_status == '판매완료'
-    ).order_by(Item.created_at.desc()).all()
+        ItemStatus.item_status == '판매완료',
+        Deal.deal_status == 'completed'
+    ).order_by(Deal.deal_datetime.desc()).all()
+
+    # 구매 이력 추가 4월22일
+    purchase_deals = Deal.query.filter(
+        Deal.buyer_id == user.id,
+        Deal.deal_status == 'completed'
+    ).order_by(Deal.deal_datetime.desc()).all()
 
     return render_template(
         'personal/transaction_history.html',
         user=user,
         selling_items=selling_items,
         reserved_items=reserved_items,
-        completed_items=completed_items,
+        completed_deals=completed_deals,
+        purchase_deals=purchase_deals,
     )

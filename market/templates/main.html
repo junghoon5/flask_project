@@ -34,7 +34,7 @@
                     </div>
                 </div>
 		        <!--    상품 출력될 페이지    -->
-                <div class="row">
+                <div class="row paged-grid" data-tab-name="mainList">
                     {% for product in product_list %}
                         <div class="col-md-3 col-6 mb-4 product-item" data-status="{{ product.status_id }}">
                             <a href="{{ url_for('items.product_details', item_id=product.id) }}" class="text-decoration-none text-dark">
@@ -66,6 +66,7 @@
                         </div>
                     {% endfor %}
                 </div>
+                <div class="pagination-wrap mt-4" data-pagination-for="mainList"></div>
             </div>
         </div>
     </main>

@@ -52,7 +52,7 @@
 
 .status-select-box {
     width: 140px;
-    border: 2px solid #CCCCFF;
+    border: 2px solid #9C96F3;
     border-radius: 8px;
     font-weight: bold;
 }
@@ -86,7 +86,7 @@
 /* 버튼 관련 */
 .btn-inquiry {
     width: 100%;
-    background-color: #6c5ce7;
+    background-color: #9C96F3;
     color: white;
     border: none;
     padding: 16px;
@@ -99,7 +99,7 @@
 
 .btn-login-required {
     width: 100%;
-    background-color: #d1d1ff;
+    background-color: #9C96F3;
     color: white;
     border: none;
     padding: 16px;
@@ -218,7 +218,7 @@
 .other-products .product-card:hover {
     transform: translateY(-8px);
     box-shadow: 0 10px 20px rgba(204, 204, 255, 0.3);
-    border-color: #CCCCFF !important;
+    border-color: #9C96F3 !important;
 }
 
 .other-item-img-container {
@@ -252,7 +252,7 @@
     top: 20%;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #CCCCFF;
+    background-color: #9C96F3;
     color: white;
     padding: 15px 30px;
     border-radius: 50px;

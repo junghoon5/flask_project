@@ -3,7 +3,18 @@ document.addEventListener('DOMContentLoaded', function () {
     // toast 모든 페이지 기능 공유
     const flaskMsg = document.getElementById("flask-message");
     if (flaskMsg && flaskMsg.value) {
-        showToast(flaskMsg.value);
+        const msg = flaskMsg.value;
+
+        // 토스트 팝업 메시지 제외해야 하는 케이스(4/22)
+        // 1. 비밀번호 변경 완료 메시지
+        // 2. 아이디 찾기 결과
+        const isForbidden =
+            (msg.includes("비밀번호") && msg.includes("변경")) ||
+            msg.includes("찾으시는 아이디는");
+        // 위에 있는 메시지 아닐 때만 토스트 실행
+        if (!isForbidden) {
+            showToast(msg);
+        }
     }
 
     // const toastList = ['saveToast', 'logoutToast', 'statusToast'];
@@ -20,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
     //         }, 1500);
     //     }
     // });
+
 
     // 상단 header 고정 ( header.html )
     const headerFixed = document.querySelector('.hfixed');
@@ -130,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const hasLetter = /[a-zA-Z]/.test(val), hasNumber = /[0-9]/.test(val), hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(val);
                 const len = val.length;
 
-                if (hasLetter && hasNumber && hasSpecial && len >= 8) updateUI(strengthBar, strengthText, '100%', '#CCCCFF', '높음 (안전한 비밀번호입니다)');
+                if (hasLetter && hasNumber && hasSpecial && len >= 8) updateUI(strengthBar, strengthText, '100%', '#9C96F3', '높음 (안전한 비밀번호입니다)');
                 else if (hasLetter && hasNumber && len >= 6) updateUI(strengthBar, strengthText, '66%', '#ffcc00', '보통 (특수문자를 섞어보세요)');
                 else updateUI(strengthBar, strengthText, '33%', '#ff6b6b', '낮음 (보안이 약해요)');
             });
@@ -184,9 +196,9 @@ document.addEventListener('DOMContentLoaded', function () {
         inputElement.addEventListener('input', function () {
             // 1. form.py 에러 메시지 제거
             const parent = inputElement.closest('.mb-3') || inputElement.closest('.mb-4');
-        if (parent) {
-            parent.querySelectorAll('.invalid-feedback-custom').forEach(err => err.remove());
-        }
+            if (parent) {
+                parent.querySelectorAll('.invalid-feedback-custom').forEach(err => err.remove());
+            }
 
             // 2. 입력창 빨간 테두리 제거
             inputElement.classList.remove('is-invalid');
@@ -198,12 +210,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 const newDiv = document.createElement('div');
                 newDiv.id = msgId;
                 newDiv.className = "check-msg";
-                inputElement.after(newDiv);
-            }
-            else {
-                msgElement.innerText = "";
-            }
-        });
+               // inputElement.after(newDiv);
+                inputElement.parentNode.insertBefore(newDiv, inputElement.nextSibling);
+                } else {
+                    msgElement.innerText = ""; // 오류 뜨고나서는 중복체크가 안돼서 추가 4/22
+                }
+            });
 
         // 입력 완료 -> 포커스 나갈 때 중복 체크 실행
         inputElement.addEventListener('blur', function () {
@@ -257,14 +269,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // 아이디, 닉네임, 이메일 각각 실행(4/21 추가)
-checkDuplicate('user_id', 'id-check-msg', "/auth/check_id_duplicate/", 'user_id');
-checkDuplicate('nickname', 'nickname-check-msg', "/auth/check_nickname_duplicate/", 'nickname');
-checkDuplicate('email', 'email-check-msg', "/auth/check_email_duplicate/", 'email');
-checkDuplicate('phone', 'phone-check-msg', "/auth/check_phone_duplicate/", 'phone');
-checkDuplicate('username', null, null, 'username');
-checkDuplicate('signup-pw1', null, null, 'password1');
-checkDuplicate('signup-pw2', null, null, 'password2');
-checkDuplicate('login-password', null, null, 'password');
+    checkDuplicate('user_id', 'id-check-msg', "/auth/check_id_duplicate/", 'user_id');
+    checkDuplicate('nickname', 'nickname-check-msg', "/auth/check_nickname_duplicate/", 'nickname');
+    checkDuplicate('email', 'email-check-msg', "/auth/check_email_duplicate/", 'email');
+    checkDuplicate('phone', 'phone-check-msg', "/auth/check_phone_duplicate/", 'phone');
+    checkDuplicate('username', null, null, 'username');
+    checkDuplicate('signup-pw1', null, null, 'password1');
+    checkDuplicate('signup-pw2', null, null, 'password2');
+    checkDuplicate('login-password', null, null, 'password');
 
     // [이메일 도메인 자동 추천 JS (4/17)]
     const emailInput = document.getElementById('email');
@@ -360,50 +372,62 @@ checkDuplicate('login-password', null, null, 'password');
 
             if (selectedFiles.length + newFiles.length > 10) {
                 showToast("사진은 최대 10장만 업로드 가능합니다.");
+                const availableSlots = 10 - selectedFiles.length;
+                selectedFiles = [...selectedFiles, ...newFiles.slice(0, availableSlots)];
+            }
+            else {
+                selectedFiles = [...selectedFiles, ...newFiles];
             }
 
-            selectedFiles = [...selectedFiles, ...Array.from(e.target.files)].slice(0, 10);
-
-            const dt = new DataTransfer();
-            selectedFiles.forEach(f => dt.items.add(f));
-            input.files = dt.files;
-
-            render();
+            updateInputAndRender();
         });
 
         window.remove = function (i) {
             selectedFiles.splice(i, 1);
+            updateInputAndRender();
+        };
+
+        //  input, render 통합 함수 ( 이미지 업로드 중복 방지 )
+        function updateInputAndRender() {
             const dt = new DataTransfer();
             selectedFiles.forEach(f => dt.items.add(f));
-            input.files = dt.files; render();
+            input.files = dt.files;
             render();
-        };
+        }
 
         function render() {
             container.innerHTML = '';
-            if (selectedFiles.length === 0) { fillEmptySlots(); return; }
+
             selectedFiles.forEach((file, i) => {
                 const reader = new FileReader();
                 reader.onload = e => {
-                    const div = document.createElement('div'); div.className = 'preview-item';
+                    const div = document.createElement('div');
+                    div.className = 'preview-item';
                     div.innerHTML = `
                         <img src="${e.target.result}">
                         <button type="button" class="btn-remove" onclick="remove(${i})">×</button>
-                        ${i === 0 ? '<div style="position:absolute; bottom:0; width:100%; background:rgba(204,204,255,0.8); color:white; font-size:10px; text-align:center;">메인 이미지</div>' : ''}`;
+                        ${i === 0 ? '<div class="main-badge">메인 이미지</div>' : ''}`;
                     container.appendChild(div);
-                    if (i === selectedFiles.length - 1)
+
+                    // 마지막 이미지가 그려진 직후에만 빈 슬롯 채움
+                    if (container.querySelectorAll('.preview-item:not(.empty-slot)').length === selectedFiles.length) {
                         fillEmptySlots();
+                    }
                 };
                 reader.readAsDataURL(file);
             });
+
+            // 이미지가 하나도 없을 때 빈 슬롯 출력
+            if (selectedFiles.length === 0) fillEmptySlots();
         }
 
         function fillEmptySlots() {
-            const currentCount = container.querySelectorAll('.preview-item').length;
+            const currentCount = selectedFiles.length;
             for (let i = currentCount; i < 10; i++) {
                 const empty = document.createElement('div');
                 empty.className = 'preview-item empty-slot';
                 empty.innerHTML = '<i class="fas fa-plus"></i>';
+                empty.onclick = () => input.click();
                 container.appendChild(empty);
             }
         }
@@ -414,7 +438,7 @@ checkDuplicate('login-password', null, null, 'password');
     // 상품 등록 시 가격 입력 칸에서 스크롤 작동하면 가격 변동되던 에러 방지
     const priceInput = document.querySelector('input[name="price"]');
     if (priceInput) {
-        priceInput.addEventListener('wheel', function() {
+        priceInput.addEventListener('wheel', function () {
             this.blur();
         });
     }
@@ -428,6 +452,21 @@ checkDuplicate('login-password', null, null, 'password');
         uploadForm.addEventListener('submit', function (e) {
             let isValid = true;
 
+            // 사진 업로드 체크
+            const errorImages = document.getElementById('error-images');
+
+            if (typeof selectedFiles === 'undefined' || selectedFiles.length === 0) {
+                isValid = false;
+
+                if (errorImages) {
+                    errorImages.innerText = '최소 1장의 사진을 등록해야 합니다.';
+                    errorImages.style.display = 'block';
+                }
+            }
+            else {
+                if (errorImages) errorImages.style.display = 'none';
+            }
+
             // 검사할 필드들 설정
             const fields = [
                 { name: 'title', msg: '상품명을 입력해주세요' },
@@ -436,31 +475,19 @@ checkDuplicate('login-password', null, null, 'password');
                 { name: 'content', msg: '상세 설명을 입력해주세요' }
             ];
 
+            // 텍스트 에러 테스트
             fields.forEach(field => {
                 const input = this.querySelector(`[name="${field.name}"]`);
                 const errorDiv = document.getElementById(`error-${field.name}`);
 
-                // 빈칸, 카테고리 초기값일 때 찾아내기용
-                const isInvalidValue = !input.value ||
-                                     input.value.trim() === "" ||
-                                     input.value === "카테고리 선택" ||
-                                     (input.tagName === 'SELECT' && !input.value);
+                if (!input.value || input.value.trim() === "" || input.value === "카테고리 선택") {
 
                 if (isInvalidValue) {
                     isValid = false;
-
-                    // 빨간 테두리
                     input.classList.add('is-invalid');
-
                     if (errorDiv) {
                         errorDiv.innerText = field.msg;
-                        errorDiv.style.display = 'block';
-                    }
-                } else {
-                    // 잘 입력했으면 원래대로
-                    input.classList.remove('is-invalid');
-                    if (errorDiv) {
-                        errorDiv.style.display = 'none';
+                        errorDiv.classList.add('show-error');
                     }
                 }
             });
@@ -469,48 +496,34 @@ checkDuplicate('login-password', null, null, 'password');
                 e.preventDefault();
                 e.stopPropagation();
                 // 첫 번째 에러가 난 곳으로 포커스 이동
-                const firstError = this.querySelector('.is-invalid');
-                if (firstError) firstError.focus();
+                const firstError = this.querySelector('.is-invalid') || errorImages;
+                if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         });
 
-        // 사용자가 다시 타이핑을 시작하면 실시간으로 빨간색 지워주기
+        // 실시간 에러 제거
         uploadForm.querySelectorAll('.custom-input').forEach(input => {
+
+            // 글자 입력할 때
             input.addEventListener('input', function() {
                 this.classList.remove('is-invalid');
                 const errorDiv = document.getElementById(`error-${this.name}`);
                 if (errorDiv) {
-                    errorDiv.innerText = '';
-                    errorDiv.style.display = 'none';
+                    errorDiv.classList.remove('show-error'); // 클래스 제거
                 }
             });
 
-            // select 박스 전용
+
+            // 카테고리 선택할 때
             input.addEventListener('change', function() {
-                if(this.value !== "카테고리 선택") {
+                if(this.value !== "" && this.value !== "카테고리 선택") {
                     this.classList.remove('is-invalid');
                     const errorDiv = document.getElementById(`error-${this.name}`);
-                    if (errorDiv) errorDiv.style.display = 'none';
+                    if (errorDiv) errorDiv.classList.remove('show-error');
                 }
             });
         });
     }
-
-    // 마이페이지, 판매자페이지 ( mypage.html, seller_profile.html )
-    window.initSlider = function (trackId, prevBtnId, nextBtnId) {
-        const track = document.getElementById(trackId), prevBtn = document.getElementById(prevBtnId), nextBtn = document.getElementById(nextBtnId);
-        if (!track || !prevBtn || !nextBtn) return;
-        const slidesItems = track.querySelectorAll('.product-slide');
-        if (!slidesItems.length) return;
-        let currentIndex = 0;
-
-        const updateSlider = () => {
-            const visibleCount = window.innerWidth <= 767 ? 1 : (window.innerWidth <= 991 ? 2 : 4);
-            const maxIndex = Math.max(0, slidesItems.length - visibleCount);
-            currentIndex = Math.min(currentIndex, maxIndex);
-            track.style.transform = `translateX(-${currentIndex * (slidesItems[0].offsetWidth + 16)}px)`;
-            prevBtn.disabled = (currentIndex === 0); nextBtn.disabled = (currentIndex >= maxIndex);
-        };
 
     // 마이페이지, 판매자페이지 탭구조로 수정 4월21일( mypage.html, seller_profile.html )
     // 탭 기능 4월21일
@@ -523,6 +536,15 @@ checkDuplicate('login-password', null, null, 'password');
         // 현재 active 버튼 찾기
         let activeButton = document.querySelector('.summary-box.active');
 
+        // active가 없으면 첫 번째 탭을 기본으로 사용
+        if (!activeButton) {
+            activeButton = tabButtons[0];
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
+        }
+
+        // 초기 패널 세팅
         if (activeButton) {
             const targetId = activeButton.dataset.tab;
 
@@ -667,12 +689,26 @@ checkDuplicate('login-password', null, null, 'password');
         pageSize: 8,
         displayType: 'block'
     });
+    // 구매이력 페이지네이션 4월22일
+    initPagedList({
+    listSelector: '.paged-purchase-list',
+    itemSelector: '.purchase-page-item',
+    pageSize: 5,
+    displayType: 'flex'
+    });
 
     initPagedList({
         listSelector: '.paged-review-list',
         itemSelector: '.review-page-item',
         pageSize: 5,
         displayType: 'flex'
+    });
+
+    initPagedList({
+        listSelector: '.paged-grid[data-tab-name="mainList"]',
+        itemSelector: '.product-item',
+        pageSize: 20,
+        displayType: 'block'
     });
 
     initStatusEdit();
@@ -687,8 +723,6 @@ checkDuplicate('login-password', null, null, 'password');
 
         });
     }
-
-
 });
 
 // 토스트 모든 페이지 기능 공유 함수

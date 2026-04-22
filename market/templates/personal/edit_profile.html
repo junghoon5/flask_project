@@ -20,7 +20,7 @@
             <div class="profile-top-row">
                 <div class="avatar-circle">
                     <img id="profilePreview"
-                        src="{% if user.profile_image %}{{ url_for('static', filename='uploads/profiles/' + user.profile_image) }}{% endif %}"
+                        src="{{ user.profile_image if user.profile_image else '' }}"
                         alt="프로필 이미지" class="avatar-preview-img"
                         style="{% if user.profile_image %}display: block;{% else %}display: none;{% endif %}">
 

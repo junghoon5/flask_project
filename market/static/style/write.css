@@ -1,5 +1,5 @@
 .custom-btn {
-    background-color: #CCCCFF;
+    background-color: #9C96F3;
     color: white !important;
     border-radius: 8px;
     padding: 6px 18px;
@@ -12,7 +12,7 @@
 }
 
 .custom-btn:hover {
-    background-color: #B3B3FF;
+    background-color: #8479ED;
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(204, 204, 255, 0.4);
 }
@@ -54,7 +54,7 @@ input[type="number"]::-webkit-inner-spin-button {
 .main-upload-area {
     width: 100%;
     aspect-ratio: 1/1;
-    border: 2px dashed #CCCCFF;
+    border: 2px dashed #9C96F3;
     background-color: #f9f9ff;
     border-radius: 15px;
     display: flex;
@@ -69,7 +69,8 @@ input[type="number"]::-webkit-inner-spin-button {
 .preview-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 15px;
+    gap: 10px;
+    margin-top: 20px;
 }
 
 /* 모바일에서 보여지는 그리드 수 다르게 */
@@ -123,6 +124,14 @@ input[type="number"]::-webkit-inner-spin-button {
     width: 22px;
     height: 22px;
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    z-index: 10;
 }
 
 .empty-slot {
@@ -154,4 +163,15 @@ input[type="number"]::-webkit-inner-spin-button {
 .custom-input.is-invalid {
     border-color: #ff6b6b !important;
     background-color: #fffafa !important;
+}
+
+.main-badge {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: #9C96F3;
+    color: white;
+    font-size: 10px;
+    text-align: center;
+    padding: 2px 0;
 }
