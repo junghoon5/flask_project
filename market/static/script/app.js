@@ -206,14 +206,14 @@ document.addEventListener('DOMContentLoaded', function () {
             inputElement.classList.remove('is-invalid');
 
             // 3. 서버 에러 시 사라졌던 메시지창이 없으면 새로 생성
-            let msgElement = document.getElementById(msgId);
-
-            if (!msgElement) {
-                const newDiv = document.createElement('div');
-                newDiv.id = msgId;
-                newDiv.className = "check-msg";
-               // inputElement.after(newDiv);
-                inputElement.parentNode.insertBefore(newDiv, inputElement.nextSibling);
+            if (msgId) {
+                let msgElement = document.getElementById(msgId);
+                if (!msgElement){
+                    const newDiv = document.createElement('div');
+                    newDiv.id = msgId;
+                    newDiv.className = "check-msg";
+                    inputElement.parentNode.insertBefore(newDiv, inputElement.nextSibling);
+                }
                 } else {
                     msgElement.innerText = ""; // 오류 뜨고나서는 중복체크가 안돼서 추가 4/22
                 }
@@ -512,6 +512,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     errorDiv.classList.remove('show-error'); // 클래스 제거
                 }
             });
+
 
             // 카테고리 선택할 때
             input.addEventListener('change', function() {

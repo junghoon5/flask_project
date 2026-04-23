@@ -42,7 +42,6 @@ def my_page():
     )
 
 # 회원정보변경 4월16일 수정
-
 @bp.route('/edit', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
@@ -265,6 +264,7 @@ def transaction_history():
         Item.is_deleted == False,
         ItemStatus.item_status == '예약중'
     ).order_by(Item.created_at.desc()).all()
+
     # 판매완료 목록에 구매자와 거래시간 표기 4월22일
     completed_deals = Deal.query.join(Item).join(ItemStatus).filter(
         Item.user_id == user.id,

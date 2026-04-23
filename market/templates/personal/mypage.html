@@ -157,7 +157,7 @@
                             <img src="{{ wish.items.images[0].image_url }}" class="product-thumb-img"
                                 alt="{{ wish.items.item_title }}">
                             {% else %}
-                            <img src="{{ url_for('static', filename='img/default_wish.png') }}"
+                            <img src="{{ url_for('static', filename='img/default.png') }}"
                                 class="product-thumb-img" alt="찜이미지">
                             {% endif %}
                         </div>
@@ -231,7 +231,7 @@
                     <!-- 클릭 불가 -->
                     <img src="{{ url_for('static', filename='img/deleted_product.png') }}" class="purchase-thumb-img">
                     {% else %}
-                    <img src="{{ url_for('static', filename='img/default_product.png') }}" class="purchase-thumb-img">
+                    <img src="{{ url_for('static', filename='img/default.png') }}" alt="상품 이미지">
                     {% endif %}
                 </div>
             </div>
