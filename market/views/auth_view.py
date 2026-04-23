@@ -12,11 +12,7 @@ from market.forms import UserCreateForm, UserLoginForm, FindAccountForm
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-
-# [일반 회원가입]
-@bp.route('/signup/', methods=['GET', 'POST'])
-
-# 일반 아이디 회원가입(4/21 수정)
+# [일반 아이디 회원가입]
 @bp.route('/signup/', methods=['GET', 'POST'])
 def signup():
     form = UserCreateForm()

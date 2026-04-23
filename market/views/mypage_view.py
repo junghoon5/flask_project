@@ -3,7 +3,7 @@ import os
 import re
 import uuid
 
-from flask import Blueprint, render_template, g, request, flash, redirect, url_for, current_app
+from flask import Blueprint, render_template, g, request, flash, redirect, url_for, current_app, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from market import db
@@ -13,11 +13,12 @@ from market.models import Item, Favorite, Review, User, ItemStatus, Deal
 # 경로 수정으로 인해 삭제 4월16일
 bp = Blueprint('personal', __name__, url_prefix='/personal')
 
-# 마이페이지
+# 마이페이지 4월23일
 @bp.route('/mypage/')
 @login_required
 def my_page():
     user = g.user
+    tab = session.pop('mypage_tab', 'product')
     # 판매중인 상품수로 변경 4월20일
     products = Item.query.join(ItemStatus).filter(
         Item.user_id == user.id,
@@ -36,11 +37,11 @@ def my_page():
         user=user,
         products=products,
         wishes=wishes,
-        reviews=reviews
+        reviews=reviews,
+        tab=tab
     )
 
 # 회원정보변경 4월16일 수정
-
 @bp.route('/edit', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
@@ -263,6 +264,7 @@ def transaction_history():
         Item.is_deleted == False,
         ItemStatus.item_status == '예약중'
     ).order_by(Item.created_at.desc()).all()
+
     # 판매완료 목록에 구매자와 거래시간 표기 4월22일
     completed_deals = Deal.query.join(Item).join(ItemStatus).filter(
         Item.user_id == user.id,

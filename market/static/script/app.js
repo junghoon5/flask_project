@@ -206,14 +206,14 @@ document.addEventListener('DOMContentLoaded', function () {
             inputElement.classList.remove('is-invalid');
 
             // 3. 서버 에러 시 사라졌던 메시지창이 없으면 새로 생성
-            let msgElement = document.getElementById(msgId);
-
-            if (!msgElement) {
-                const newDiv = document.createElement('div');
-                newDiv.id = msgId;
-                newDiv.className = "check-msg";
-               // inputElement.after(newDiv);
-                inputElement.parentNode.insertBefore(newDiv, inputElement.nextSibling);
+            if (msgId) {
+                let msgElement = document.getElementById(msgId);
+                if (!msgElement){
+                    const newDiv = document.createElement('div');
+                    newDiv.id = msgId;
+                    newDiv.className = "check-msg";
+                    inputElement.parentNode.insertBefore(newDiv, inputElement.nextSibling);
+                }
                 } else {
                     msgElement.innerText = ""; // 오류 뜨고나서는 중복체크가 안돼서 추가 4/22
                 }
@@ -513,6 +513,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
+
             // 카테고리 선택할 때
             input.addEventListener('change', function() {
                 if(this.value !== "" && this.value !== "카테고리 선택") {
@@ -731,7 +732,7 @@ function showToast(message) {
 
     const toastId = 'toast_' + Date.now();
     const toastHTML = `
-        <div id="${toastId}" class="toast align-items-center text-white border-0 show" role="alert" 
+        <div id="${toastId}" class="toast align-items-center text-white border-0 show" role="alert"
              style="background-color: #CCCCFF; border-radius: 12px; min-width: 250px; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
             <div class="d-flex">
                 <div class="toast-body text-center w-100">
