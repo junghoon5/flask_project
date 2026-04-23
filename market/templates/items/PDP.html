@@ -145,8 +145,7 @@
         </div>
     </section>
 
-
-    <div class="comment-list-wrap my-5">
+     <div class="comment-list-wrap my-5">
         <h5 class="border-bottom py-3 fw-bold text-dark">{{ product.comment_set|length }}개의 댓글이 있습니다.</h5>
         <div id="comment-container">
             {% for comment in product.comment_set %}
@@ -170,7 +169,6 @@
             </div>
             {% endfor %}
         </div>
-
         {% if product.comment_set|length > 5 %}
         <div class="text-center mt-4">
             <button type="button" id="load-more-btn" onclick="showAllComments()" class="btn btn-load-more">

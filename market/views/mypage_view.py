@@ -179,7 +179,6 @@ def favorite():
 @bp.route('/seller/<int:user_id>/')
 def seller_profile(user_id):
     seller = User.query.get_or_404(user_id)
-    print(f"판매자 이미지 경로: {seller.profile_image}")
     tab = request.args.get('tab', 'products')
 
     products = Item.query.join(ItemStatus).filter(
