@@ -107,25 +107,10 @@ project/
 
 ## 데이터베이스 구조
 
-### 주요 테이블
 
-User / Item / ItemImage / Category / ItemStatus / Favorite / Deal / Review / Comment
-
-<details>
-<summary>Entity 정의</summary>
+<img width="2796" height="2130" alt="ERD" src="https://github.com/user-attachments/assets/827be5af-204c-4b38-b98b-e2b1248d2820" />
+ERD
 <br>
-  
-* 사용자(User): 서비스 이용 주체로, 상품 판매·구매 및 커뮤니티 활동을 수행
-* 상품(Item): 거래의 대상이 되는 객체이며, 특정 카테고리와 판매 상태를 가짐
-* 상품 상태(ItemStatus): '판매 중', '예약 중', '판매 완료' 등 상품의 현재 단계를 관리
-* 카테고리(Category): 상품을 논리적으로 분류
-* 거래(Deal): 판매자와 구매자 간의 거래 기록, 가격과 거래날짜를 포함
-* 리뷰(Review): 유저간 완료된 거래를 기반으로 작성되는 리뷰 형식의 피드백
-* 댓글(Comment): 상품에 대한 질의응답 및 대화 기록으로, 계층형 대댓글 구조를 지원
-* 찜하기(Favorite): 사용자가 관심 있는 상품을 보관하는 객체
-* 상품 이미지(ItemImage): 상품 상세 설명을 위한 이미지 파일 관리
-
-</details>
 
 핵심 관계
 
